@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="input_mux" type="mux.py" name="Input_mux" output="screen">
+		<rosparam file="$(find input_mux)/config/inputs.yaml" command="load"/>
+  </node>
+</launch>
