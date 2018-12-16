@@ -2,13 +2,19 @@
 import rospy
 from math import *
 import time
-import sys
+import sys, signal
 from termcolor import colored
 
 from sensor_msgs.msg import NavSatFix
 from navigation.msg import Goal,Planner_state
 from navigation.srv import plan_state
 import thread
+
+def signal_handler(signal, frame):
+    print("\nprogram exiting")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 
 class GPS() :
@@ -125,9 +131,10 @@ class GPS() :
 
 	def key_intrp(self):
 		print "\n Type 'p' to pause ----- 'c' to contin ----- 'r' to rst the Planner \n"
+
 		while True:
-        		try:
-        			text = raw_input('$GPS_node>>> ')
+			try:
+				text = raw_input('$GPS_node>>> ')
 				if (text == 'p'):
   					self.srv("pause")
 		  		elif (text == 'c'):
@@ -135,7 +142,7 @@ class GPS() :
 		  		elif (text == 'r'):
 		  			self.srv("rst")
 		  		else:
-		  			print 'Invalid command'
+	  				print 'Invalid command'
 			except KeyboardInterrupt:
 			  	print 'Stopping....'
 			  	sys.exit()
