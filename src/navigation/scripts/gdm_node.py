@@ -63,7 +63,8 @@ class GPS() :
 				goal.distance = self.dist_gps
 				goal.bearing = self.bearing
 				self.pub_goal.publish(goal)
-				time.sleep(0.001)
+				rate = rospy.Rate(1)
+				rate.sleep()
 
 				while(~self.planner_status):
 					try:
@@ -71,7 +72,8 @@ class GPS() :
 						goal.distance = self.dist_gps
 						goal.bearing = self.bearing
 						self.pub_goal.publish(goal)
-						time.sleep(0.001)
+						rate = rospy.Rate(1)
+						rate.sleep()
 					except KeyboardInterrupt:
 						sys.exit()
 				#ball detecton service
