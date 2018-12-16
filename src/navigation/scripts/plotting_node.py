@@ -57,7 +57,7 @@ if __name__ == '__main__':
 		min_way_lon = float(min(dest_lon_cont));
 		
 		global ax
-		#ax.set_extent((min_way_lat-0.0001,max_way_lat+0.0001,min_way_lon-0.0001,max_way_lon+0.0001))
+		ax.set_extent((min_way_lat-0.0001,max_way_lat+0.0001,min_way_lon-0.0001,max_way_lon+0.0001))
 		for i in range(len(dest_lat_cont)):
 			plt.plot(float(dest_lat_cont[i]),float(dest_lon_cont[i]),color='red',
 			 	linewidth=1, marker='.', transform=ccrs.Geodetic(),)
