@@ -90,7 +90,7 @@ void loop()
   }
 
 
-  if (mode == 1)
+  else if (mode == 1)
   {
 
     switch (dir)

@@ -48,9 +48,9 @@ class drive():
 			else:
 				self.direction = 1
 
-			loco(addf)
-			loco(addm)
-			loco(addb)
+			self.loco(addf)
+			self.loco(addm)
+			self.loco(addb)
 			
 
 		elif(abs(self.zero_turn)>0.25):
@@ -62,23 +62,23 @@ class drive():
 			else:
 				self.direction = 0
 
-			loco(addf)
-			loco(addm)
-			loco(addb)
+			self.loco(addf)
+			self.loco(addm)
+			self.loco(addb)
 		else:
 
 			self.rpm = 0
 			self.mode = 0
 			self.direction = 0
 
-			loco(addf)
-			loco(addm)
-			loco(addb)
+			self.loco(addf)
+			self.loco(addm)
+			self.loco(addb)
 
     def joyCallback(self,msg):
         
 		self.straight  = msg.axes[1]
-		self.zero_turn = msg.axes[3]
+		self.zero_turn = msg.axes[2]
 
 		if(msg.buttons[5]==1):
 			if self.d <6:
