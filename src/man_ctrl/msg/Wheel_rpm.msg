@@ -1,3 +1,3 @@
-int16 forward
-int16 rotate
-int16 max_rpm
+int16 rpm
+int16 dir
+int16 mod

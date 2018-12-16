@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from rover_msgs.msg import Wheel_rpm
+from man_ctrl.msg import Wheel_rpm
 #from rover_msgs.msg import Diag_wheel
 from sensor_msgs.msg import Joy
 import numpy
@@ -32,22 +32,29 @@ class drive():
 
 		rpm = Wheel_rpm()
 		
-		rpm.max_rpm = self.d*30
-		if(abs(self.straight)>0.25):
+		if(abs(self.straight)>0.1):
 		    
-			rpm.forward = self.straight*self.d*30
-			#rpm.left_rpm = self.straight*self.d*30
-			rpm.rotate = 0
+			rpm.rpm = abs(self.straight*self.d*30)
+			rpm.mod = 0
+			if (self.straight>=0):
+				rpm.dir = 0
+			else :
+				rpm.dir = 1
 
-		elif(abs(self.zero_turn)>0.25):
 
-			rpm.rotate = self.zero_turn*self.d*30
-			#rpm.left_rpm = -self.zero_turn*self.d*30
-			rpm.forward = 0
+		elif(abs(self.zero_turn)>0.1):
+
+			rpm.rpm = abs(self.zero_turn*self.d*30)
+			rpm.mod = 1
+			if (self.zero_turn>=0):
+				rpm.dir = 0
+			else :
+				rpm.dir = 1
 		else:
 
-			rpm.forward = 0
-			rpm.rotate = 0
+			rpm.rpm = 0
+			rpm.dir = 0
+			rpm.mod = 0
 
 
 		self.pub_motor.publish(rpm)
@@ -55,7 +62,6 @@ class drive():
         
 		self.straight  = msg.axes[1]
 		self.zero_turn = msg.axes[3]
-        #self.steer_straight = msg.axes[2]
 
 		if(msg.buttons[5]==1):
 			if self.d <5:
