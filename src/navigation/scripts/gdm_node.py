@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#add option to load data from file or enter new
 import rospy
 from math import *
 import time
