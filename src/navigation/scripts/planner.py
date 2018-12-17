@@ -6,6 +6,7 @@ from std_msgs.msg import String
 from navigation.msg import Goal,Planner_state
 from sensors.msg import Imu
 from man_ctrl.srv import *
+from man_ctrl.msg import WheelRpm
 import math
 import thread
 
@@ -27,7 +28,7 @@ class Planner():
             print e
 
         #publishers
-        # self.pub_drive=rospy.Publisher("drive_msg",Drive,queue_size=10)
+        self.pub_drive=rospy.Publisher("drive_msg",WheelRpm,queue_size=10)
         self.pub_planner_state=rospy.Publisher("planner_state",Planner_state,queue_size=2)
 
         #service server
@@ -56,7 +57,7 @@ class Planner():
                     if(abs(self.bearing_dest-self.bearing_curr)<self.bearing_tolerance):
                         mult = (self.distance_to_dest/self.distance_to_dest_init)*self.forward_mult
                         forward_vel = self.forward_vel_cal(self.forward_min,self.forward_max,mult)
-                        self.drive_pub(forward_vel,0)  #setup a primitive pid w.r.t to diatnce to be travelled.
+                        self.drive_pub(forward_vel,0,self.forward_max)  #setup a primitive pid w.r.t to diatnce to be travelled.
                     else:
                         try:
                 			result = self.drive_rotate_srv(float(self.bearing_dest))
@@ -128,8 +129,11 @@ class Planner():
         self.load_params()
         #need to reset distance calculator
 
-    def drive_pub(self,vel,omega,theta=1000): #used to send the drive node the info, the value of theta taken is 0 to 359 if any other value is given the service won't be called.
-        pass
+    def drive_pub(self,vel,omega,max_vel,theta=1000): #used to send the drive node the info, the value of theta taken is 0 to 359 if any other value is given the service won't be called.
+        vel =WheelRpm()
+        vel.vel=vel
+        vel.omega=omega
+        self.pub_drive.publish(vel)
     def forward_vel_cal(self,vel_min,vel_max,vel_mult):
         vel = vel_min + (abs(vel_max-vel_min)*vel_mult)
         return min(vel,vel_max)
