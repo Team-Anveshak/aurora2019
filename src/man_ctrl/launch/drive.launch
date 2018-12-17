@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="man_ctrl" type="drive.py" name="drive" output="screen"/>
+  <node pkg="man_ctrl" type="rot_server.py" name="rot_server" output="screen"/>
+</launch>

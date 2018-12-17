@@ -17,7 +17,7 @@ class Planner():
         rospy.init_node("Planner")
 
         #threads
-        thread.start_new_thread( self.obs_scanner,())
+        # thread.start_new_thread( self.obs_scanner,())
 
         #subscribers
         try:
@@ -36,6 +36,7 @@ class Planner():
 
         #service clients
         try:
+            rospy.wait_for_service('rotator')
             # self.cli_drive_state = rospy.ServiceProxy('Drive_state_ctrl', drive_state)
             self.drive_rotate_srv = rospy.ServiceProxy('rotator', rotate)
         except Exception,e:
@@ -61,7 +62,7 @@ class Planner():
                     else:
                         try:
                 			result = self.drive_rotate_srv(float(self.bearing_dest))
-                            print result
+                            # print result
                             # while resul
                         except rospy.ServiceException,e :
                             print "Service call failed: %s"%e
@@ -73,7 +74,7 @@ class Planner():
 
 
         elif(self.state=="pause"):
-            self.drive_pub(0.0,0.0)
+            self.drive_pub(0.0,0.0,self.forward_max)
             pass
         elif(self.state=="stop"):
             self.reset()

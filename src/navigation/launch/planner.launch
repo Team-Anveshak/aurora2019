@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+
   <node pkg="navigation" type="planner.py" name="planner" output="screen">
     <rosparam file="$(find navigation)/config/planner.yaml" command="load"/>
   </node>
+
 </launch>
