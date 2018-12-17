@@ -3,19 +3,16 @@ import rospy
 from math import *
 import time
 import sys, signal
+import thread
 from termcolor import colored
 
 from sensor_msgs.msg import NavSatFix
 from navigation.msg import Goal,Planner_state
 from navigation.srv import plan_state
-import thread
 
-def signal_handler(signal, frame):
-    print("\nprogram exiting")
+def signal_handler(signal, frame):  #For catching keyboard interrupt Ctrl+C
+    print "\nProgram exiting....."
     sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
-
 
 class GPS() :
 	def __init__(self):
@@ -23,11 +20,11 @@ class GPS() :
 		#rospy.wait_for_service('Planner_state_ctrl')
 		self.state_srv = rospy.ServiceProxy('Planner_state_ctrl', plan_state)
 
-		self.pub_goal = rospy.Publisher('goal', Goal,queue_size=10) #Publisher to planner
-		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) #From nmea node
-		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback)
+		self.pub_goal = rospy.Publisher('goal', Goal,queue_size=10) 	#Publisher to planner
+		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
+		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback) 
 
-		file_path = "/home/achu/aurora2019/src/navigation/config/gps_data.txt"
+		'''file_path = "~/aurora2019/src/navigation/config/gps_data.txt"
 		try:
 			self.f=open(file_path,'r')
 			self.dest_lat_cont,self.dest_lon_cont = [],[]
@@ -36,30 +33,29 @@ class GPS() :
 				self.dest_lat_cont.append(row[0])
 				self.dest_lon_cont.append(row[1])
 		except Exception:
-			print colored("GPS data file not opened",'red')
+			print colored("GPS data file not opened",'red')'''
 
-		self.dest_lat_cont,self.dest_lon_cont = [],[]
+		self.dest_lat_cont,self.dest_lon_cont = [],[]			#array of way points
 		print "Enter GPS way-points one by one in latitude<>longitude format"
 		print colored('$ Type ok once done', 'green')
-		l = raw_input('GPSprompt>>>')
+		l = raw_input('GPSprompt >>>')
 		while (l != 'ok'):
 			row = l.split()
 			self.dest_lat_cont.append(row[0])
 			self.dest_lon_cont.append(row[1])
-			l = raw_input('GPSprompt>>>')
+			l = raw_input('GPSprompt >>>')
 
 		self.curr_lat = 0.0
 		self.curr_lon = 0.0
 		self.bearing=0
 		self.planner_status = 0
 		self.distance = 0
-		thread.start_new_thread( self.key_intrp,())
-
+		thread.start_new_thread(self.key_intrp,()) 			
 
 
 	def run(self):
 		goal = Goal()
-
+		
 		while not rospy.is_shutdown():
 			for i in range(len(self.dest_lat_cont)):
 				self.dest_lat= float(self.dest_lat_cont[i])
@@ -80,8 +76,8 @@ class GPS() :
 						self.pub_goal.publish(goal)
 						rate = rospy.Rate(1)
 						rate.sleep()
-					except KeyboardInterrupt:
-						sys.exit()
+					except Exception,e:
+						print colored("Error",'red') + "%s"%e
 				#ball detecton service
 				self.srv("rst")
 
@@ -110,7 +106,8 @@ class GPS() :
 			print "Service call failed: %s"%e
 			return 'Error'
 
-	def cal(self):
+
+	def cal(self): #distance and bearing calculator
 		lon1, lat1, lon2, lat2 = map(radians, [self.curr_lon, self.curr_lat, self.dest_lon, self.dest_lat])
 		dlon = lon2 - lon1
 		dlat = lat2 - lat1
@@ -133,26 +130,22 @@ class GPS() :
 		print "\n Type 'p' to pause ----- 'c' to contin ----- 'r' to rst the Planner \n"
 
 		while True:
-			try:
-				text = raw_input('$GPS_node>>> ')
-				if (text == 'p'):
-  					self.srv("pause")
-		  		elif (text == 'c'):
-		  			self.srv("cotin")
-		  		elif (text == 'r'):
-		  			self.srv("rst")
-		  		else:
-	  				print 'Invalid command'
-			except KeyboardInterrupt:
-			  	print 'Stopping....'
-			  	sys.exit()
-
+			text = raw_input('$GPS_node >>> ')
+			if (text == 'p'):
+				self.srv("pause")
+	  		elif (text == 'c'):
+	  			self.srv("cotin")
+	  		elif (text == 'r'):
+	  			self.srv("rst")
+	  		else:
+  				print 'Invalid command'
+		
 if __name__ == '__main__':
 	x = raw_input('Do you want to start the node? (y/n) : ')
 
 	gps = GPS()
-
-	#gps.key_intrp()
+	signal.signal(signal.SIGINT, signal_handler)
+	
 	if(x == 'y'):
 		gps.run()
 	else:
