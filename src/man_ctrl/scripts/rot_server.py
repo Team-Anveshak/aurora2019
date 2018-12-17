@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import rospy
 from man_ctrl.srv import *
-from rover_msgs.msg import Wheel_rpm,Imu_yaw
+from man_ctrl.msg import Wheel_rpm
+from sensors.msg import Imu
 import numpy
 
+curr_bear=0.0
 bearing_tolerance = rospy.get_param('~bearing_tolerance',0.1)
 rpm = rospy.get_param('~rpm',10)
 def rotator(final_bear):
@@ -26,21 +28,16 @@ def rotator(final_bear):
 
 
 def imuCallback(msg):
-	curr_bear=-msg.yaw 
+	curr_bear=-msg.yaw
 
-	
+
 
 rospy.init_node('rot_server')
 
 service = rospy.Service('rotator',rotate,rotator)
 
 pub_serv = rospy.Publisher("loco/wheel_rpm",Wheel_rpm,queue_size = 10)
-rospy.Subscriber("imu", Imu_yaw, imuCallback)
+rospy.Subscriber("imu", Imu, imuCallback)
 
 
 rospy.spin()
-
-
-
-
-
