@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import rospy
 from man_ctrl.msg import Wheel_rpm
-#from rover_msgs.msg import Diag_wheel
 from sensor_msgs.msg import Joy
 import numpy
 import math
@@ -16,11 +15,9 @@ class drive():
 
         #rospy.Subscriber("diag/wheel_vel",Diag_wheel,self.Callback)
         rospy.Subscriber("/joy",Joy,self.joyCallback)
-        #self.mode = 1
         self.straight = 0
         self.zero_turn = 0
         self.d = 1
-        # self.mode = 1
 
     def spin(self):
         rate = rospy.Rate(10)
@@ -61,17 +58,17 @@ class drive():
     def joyCallback(self,msg):
         
 		self.straight  = msg.axes[1]
-		self.zero_turn = msg.axes[3]
+		self.zero_turn = msg.axes[2]
 
 		if(msg.buttons[5]==1):
 			if self.d <5:
 				self.d = self.d + 1
-			print("Max rpm is {}".format(self.d*30))
+				print("Max rpm is {}".format(self.d*30))
 		
 		elif(msg.buttons[4]==1):
 			if self.d >1:
 				self.d = self.d - 1
-			print("Max rpm is {}".format(self.d*30))
+				print("Max rpm is {}".format(self.d*30))
 
 
 if __name__ == '__main__':

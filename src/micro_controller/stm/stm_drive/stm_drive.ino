@@ -4,7 +4,7 @@ HardwareTimer timer(3);
 
 /////
 
-int address = 15;   //change address here 15,16,17
+int address = 16;   //change address here 15,16,17
 
 /////
 
@@ -68,7 +68,7 @@ void loop()
           digitalWrite(DIRl, LOW);
           pwmWrite(PWMr, pwm);
           pwmWrite(PWMl, pwm);
-          break;;
+          break;
         }
 
       case 1:
@@ -100,7 +100,7 @@ void loop()
           digitalWrite(DIRl, HIGH);
           pwmWrite(PWMr, pwm);
           pwmWrite(PWMl, pwm);
-          break;;
+          break;
         }
 
       case 1:
