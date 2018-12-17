@@ -13,6 +13,7 @@ class drive():
         rospy.init_node("drive")
 
         self.pub_motor = rospy.Publisher("motion",WheelRpm,queue_size=10)
+        rospy.Subscriber("drive_inp",WheelRpm,self.driveCallback)
 
         #rospy.Subscriber("diag/wheel_vel",Diag_wheel,self.Callback)
 
@@ -21,6 +22,7 @@ class drive():
         self.straight = 0
         self.zero_turn = 0
         self.d = 1
+        self.max_rpm=30.0
 
     def spin(self):
         rate = rospy.Rate(10)
@@ -37,11 +39,11 @@ class drive():
     def main(self):
 
         rpm = WheelRpm()
-		
-        rpm.max_rpm = self.d*30
+
+
 
         if(abs(self.straight)>0 or abs(self.zero_turn)>0):
-            
+
             rpm.vel = self.straight*self.d*30
             rpm.omega = self.zero_turn*self.d*10
 
@@ -53,10 +55,9 @@ class drive():
 
         self.pub_motor.publish(rpm)
 
-    def controlCallback(self):
-        pass
-        #   whatever control stuff comes in, should be interpreted here
-        #   vel and omega values passed onto main() and theta to client
+    def driveCallback(self,msg):
+        self.straight=msg.vel
+        self.max_rpm=msg.max_rpm
 
 
 

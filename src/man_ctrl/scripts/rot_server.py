@@ -8,13 +8,14 @@ import numpy
 import time
 
 class rotateService():
-	
+
 	def __init__(self):
 		rospy.init_node('rot_server')
 		service = rospy.Service('rotator',rotate,self.rotator)
 
 		self.pub_serv = rospy.Publisher("motion",WheelRpm,queue_size = 10)
 		rospy.Subscriber("imu", Imu, self.imuCallback)
+
 
 
 
@@ -29,16 +30,16 @@ class rotateService():
 		self.initial_bear = self.curr_bear
 		self.remainAngle = self.final_bear - self.curr_bear
 		self.omega = self.omegaManager(self.remainAngle)
-		
+
 
 		self.last_time = time.time()
 		self.last_bear = self.curr_bear
-		
+
 		Rpm.max_rpm = 100
 		Rpm.theta = 0
 
 		while (abs(self.remainAngle) > self.bearing_tolerance):
-						
+
 			Rpm.vel = 0
 			if self.remainAngle<0:
 				Rpm.omega = int(-self.omega)
@@ -54,6 +55,7 @@ class rotateService():
 
 			self.last_time = time.time()
 			self.last_bear = self.curr_bear
+		return plan_stateResponse("Rotate_finished")
 
 
 	# def pControl(self):
@@ -76,7 +78,7 @@ class rotateService():
 
 
 	def imuCallback(self,msg):
-		self.curr_bear=-msg.yaw 
+		self.curr_bear=-msg.yaw
 
 
 if __name__ == '__main__':

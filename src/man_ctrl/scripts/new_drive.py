@@ -28,9 +28,9 @@ class drive():
     def main(self):
 
 		rpm = Wheel_rpm()
-		
+
 		if(abs(self.straight)>0.1):
-		    
+
 			rpm.rpm = abs(self.straight*self.d*30)
 			rpm.mod = 0
 			if (self.straight>=0):
@@ -56,7 +56,7 @@ class drive():
 
 		self.pub_motor.publish(rpm)
     def joyCallback(self,msg):
-        
+
 		self.straight  = msg.axes[1]
 		self.zero_turn = msg.axes[2]
 
@@ -64,7 +64,7 @@ class drive():
 			if self.d <5:
 				self.d = self.d + 1
 				print("Max rpm is {}".format(self.d*30))
-		
+
 		elif(msg.buttons[4]==1):
 			if self.d >1:
 				self.d = self.d - 1

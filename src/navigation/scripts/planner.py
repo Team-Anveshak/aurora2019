@@ -28,7 +28,7 @@ class Planner():
             print e
 
         #publishers
-        self.pub_drive=rospy.Publisher("drive_msg",WheelRpm,queue_size=10)
+        self.pub_drive=rospy.Publisher("drive_inp",WheelRpm,queue_size=10)
         self.pub_planner_state=rospy.Publisher("planner_state",Planner_state,queue_size=2)
 
         #service server
@@ -61,6 +61,8 @@ class Planner():
                     else:
                         try:
                 			result = self.drive_rotate_srv(float(self.bearing_dest))
+                            print result
+                            # while resul
                         except rospy.ServiceException,e :
                             print "Service call failed: %s"%e
                         #send service call to drive node to turn to self.bearing destination
