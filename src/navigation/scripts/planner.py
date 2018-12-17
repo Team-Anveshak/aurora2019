@@ -133,10 +133,10 @@ class Planner():
         #need to reset distance calculator
 
     def drive_pub(self,vel,omega,max_vel,theta=1000): #used to send the drive node the info, the value of theta taken is 0 to 359 if any other value is given the service won't be called.
-        vel =WheelRpm()
-        vel.vel=vel
-        vel.omega=omega
-        self.pub_drive.publish(vel)
+        rpm =WheelRpm()
+        rpm.vel=vel
+        rpm.omega=omega
+        self.pub_drive.publish(rpm)
     def forward_vel_cal(self,vel_min,vel_max,vel_mult):
         vel = vel_min + (abs(vel_max-vel_min)*vel_mult)
         return min(vel,vel_max)
