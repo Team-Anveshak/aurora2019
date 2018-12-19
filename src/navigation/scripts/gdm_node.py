@@ -17,14 +17,14 @@ def signal_handler(signal, frame):  #For catching keyboard interrupt Ctrl+C
 class GPS() :
 	def __init__(self):
 		rospy.init_node("gdm")
-		#rospy.wait_for_service('Planner_state_ctrl')
+		rospy.wait_for_service('Planner_state_ctrl')
 		self.state_srv = rospy.ServiceProxy('Planner_state_ctrl', plan_state)
 
 		self.pub_goal = rospy.Publisher('goal', Goal,queue_size=10) 	#Publisher to planner
 		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
 		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback) 
 
-		'''file_path = "~/aurora2019/src/navigation/config/gps_data.txt"
+		file_path = "~/aurora2019/src/navigation/config/gps_data.txt"
 		try:
 			self.f=open(file_path,'r')
 			self.dest_lat_cont,self.dest_lon_cont = [],[]
@@ -33,9 +33,9 @@ class GPS() :
 				self.dest_lat_cont.append(row[0])
 				self.dest_lon_cont.append(row[1])
 		except Exception:
-			print colored("GPS data file not opened",'red')'''
+			print colored("GPS data file not opened",'red')
 
-		self.dest_lat_cont,self.dest_lon_cont = [],[]			#array of way points
+		'''self.dest_lat_cont,self.dest_lon_cont = [],[]			#array of way points
 		print "Enter GPS way-points one by one in latitude<>longitude format"
 		print colored('$ Type ok once done', 'green')
 		l = raw_input('GPSprompt >>>')
@@ -43,7 +43,7 @@ class GPS() :
 			row = l.split()
 			self.dest_lat_cont.append(row[0])
 			self.dest_lon_cont.append(row[1])
-			l = raw_input('GPSprompt >>>')
+			l = raw_input('GPSprompt >>>')'''
 
 		self.curr_lat = 0.0
 		self.curr_lon = 0.0
