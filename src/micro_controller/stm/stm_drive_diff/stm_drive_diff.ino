@@ -4,7 +4,7 @@ HardwareTimer timer(3);
 
 /////
 
-int address = 16;   //change address here 15,16,17
+int address = 17;   //change address here 15,16,17
 
 /////
 
@@ -31,6 +31,11 @@ void receiveEvent(int howMany)
     max_rpm = Wire.read();
     forward = map(f, 0, max_rpm, -max_rpm, max_rpm);
     rotate = map(r, 0, max_rpm, -max_rpm, max_rpm);
+
+    if (forward < 0)
+    {
+      rotate = -rotate;
+    }
   }
 }
 
@@ -62,31 +67,46 @@ void loop()
 
   pwmr = int(constrain(1.438 * (forward + rotate), -255, 255));
   pwml = int(constrain(1.438 * (forward - rotate), -255, 255));
-  if (pwmr >= 0)
+  if (pwmr > 0)
   {
+    digitalWrite(slpr, HIGH);
     digitalWrite(DIRr, HIGH);
     pwmWrite(PWMr, abs(pwmr));
 
   }
 
-  else
+  else if (pwmr < 0)
   {
+    digitalWrite(slpr, HIGH);
     digitalWrite(DIRr, LOW);
     pwmWrite(PWMr, abs(pwmr));
 
   }
 
-  if (pwml >= 0)
+  else
   {
+    digitalWrite(slpr, LOW);
+    pwmWrite(PWMr, 0);
+  }
+
+  if (pwml > 0)
+  {
+    digitalWrite(slpl, HIGH);
     digitalWrite(DIRl, LOW);
     pwmWrite(PWMl, abs(pwml));
   }
 
-  else
+  else if (pwml < 0)
   {
+    digitalWrite(slpl, HIGH);
     digitalWrite(DIRl, HIGH);
-
     pwmWrite(PWMl, abs(pwml));
   }
+  else
+  {
+    digitalWrite(slpl,LOW);
+    pwmWrite(PWMl, 0);
+  }
 }
+
 
