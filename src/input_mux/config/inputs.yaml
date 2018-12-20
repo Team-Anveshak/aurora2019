@@ -1,0 +1,22 @@
+inputs:
+  joy_drive:
+    input_type: "joy"
+    topic_name: "joy_drive"
+    topic_msg_type: "sensor_msgs/joy"
+    destination_node: "drive"
+  gui_drive:
+    input_type: "gui"
+    topic_name: "gui_drive"
+    topic_msg_type: "sensor_msgs/gui"
+    destination_node: "drive"
+  joy_arm:
+    input_type: "joy"
+    topic_name: "joy_arm"
+    topic_msg_type: "sensor_msgs/joy"
+    destination_node: "arm"
+
+destination:
+  drive:
+    topic_name: "drive_input"
+  arm:
+    topic_name: "arm_input"
