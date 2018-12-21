@@ -1,9 +1,8 @@
 #!/usr/bin/env python
+#add option to load data from file or enter new
 import rospy
 from math import *
-import time
-import sys, signal
-import thread
+import sys, signal,thread
 from termcolor import colored
 
 from sensor_msgs.msg import NavSatFix

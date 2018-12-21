@@ -1,1 +1,1 @@
-float64 yaw
+float32 yaw
