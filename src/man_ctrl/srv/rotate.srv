@@ -1,6 +1,6 @@
-float32 angle
+float64 angle
 
 ---
 
-string confirm
+
 

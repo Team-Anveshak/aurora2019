@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import rospy
 from man_ctrl.msg import WheelRpm
-from sensor_msgs.msg import Joy
+from man_ctrl.srv import rotate
+#import control signal from multiplexer here
 import numpy
 import math
 
@@ -14,7 +15,9 @@ class drive():
         self.pub_motor = rospy.Publisher("motion",WheelRpm,queue_size=10)
 
         #rospy.Subscriber("diag/wheel_vel",Diag_wheel,self.Callback)
-        rospy.Subscriber("/joy",Joy,self.joyCallback)
+
+        #insert subscriber to drive control
+
         self.straight = 0
         self.zero_turn = 0
         self.d = 1
@@ -25,17 +28,22 @@ class drive():
             self.main()
             rate.sleep()
 
+    def rotateClient(self):
+        rospy.wait_for_service('rotator')
+        rotateFunc = rospy.ServiceProxy('rotator',rotate)
+
+        goal = rotateFunc(self.theta)
+
     def main(self):
 
         rpm = WheelRpm()
 		
         rpm.max_rpm = self.d*30
-        rpm.theta = 0
-        
-        if(abs(self.straight)>0.1 or abs(self.zero_turn)>0.1):
+
+        if(abs(self.straight)>0 or abs(self.zero_turn)>0):
             
             rpm.vel = self.straight*self.d*30
-            rpm.omega = self.zero_turn*self.d*30
+            rpm.omega = self.zero_turn*self.d*10
 
         else:
 
@@ -44,20 +52,13 @@ class drive():
 
 
         self.pub_motor.publish(rpm)
-    def joyCallback(self,msg):
-        
-        self.straight  = -msg.axes[1]
-        self.zero_turn = msg.axes[2]
 
-        if(msg.buttons[5]==1):
-            if self.d <5:
-                self.d = self.d + 1
-                print("Max rpm is {}".format(self.d*30))
-        
-        elif(msg.buttons[4]==1):
-            if self.d >1:
-                self.d = self.d - 1
-                print("Max rpm is {}".format(self.d*30))
+    def controlCallback(self):
+        pass
+        #   whatever control stuff comes in, should be interpreted here
+        #   vel and omega values passed onto main() and theta to client
+
+
 
 if __name__ == '__main__':
     run = drive()

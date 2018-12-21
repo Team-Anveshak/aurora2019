@@ -18,24 +18,21 @@ int address = 17;   //change address here 15,16,17
 #define PWMr PB0
 #define PWMl PB1
 
-volatile int forward = 0, rotate = 0, f = 0, r = 0;
-volatile int max_rpm = 30;
+int vel = 0, omega = 0;
+float ang_vel = 0;
+int max_rpm = 30;
 int pwmr = 0, pwml = 0;
 
 void receiveEvent(int howMany)
 {
   if ( Wire.available())
   {
-    f = Wire.read();
-    r = Wire.read();
+    vel = Wire.read();
+    omega = Wire.read();
     max_rpm = Wire.read();
-    forward = map(f, 0, max_rpm, -max_rpm, max_rpm);
-    rotate = map(r, 0, max_rpm, -max_rpm, max_rpm);
-
-    if (forward < 0)
-    {
-      rotate = -rotate;
-    }
+    vel = map(vel, 0, max_rpm, -max_rpm, max_rpm);
+    omega = map(omega , 0, max_rpm, -max_rpm, max_rpm);
+    ang_vel = omega * 3.06;
   }
 }
 
@@ -65,8 +62,8 @@ void setup()
 void loop()
 {
 
-  pwmr = int(constrain(1.438 * (forward + rotate), -255, 255));
-  pwml = int(constrain(1.438 * (forward - rotate), -255, 255));
+  pwmr = int(constrain(1.438 * (float(vel) + ang_vel), -255, 255));
+  pwml = int(constrain(1.438 * (float(vel) - ang_vel), -255, 255));
   if (pwmr > 0)
   {
     digitalWrite(slpr, HIGH);
@@ -104,7 +101,7 @@ void loop()
   }
   else
   {
-    digitalWrite(slpl,LOW);
+    digitalWrite(slpl, LOW);
     pwmWrite(PWMl, 0);
   }
 }

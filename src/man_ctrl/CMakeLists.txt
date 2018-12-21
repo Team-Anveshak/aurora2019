@@ -53,8 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   Wheel_rpm.msg
-   Wheel_rpm_diff.msg
+   WheelRpm.msg
  )
 
 ## Generate services in the 'srv' folder
