@@ -67,7 +67,7 @@ except serial.serialutil.SerialException:
 
 roll=0
 pitch=0
-yaw=0
+yaw_deg=0
 seq=0
 accel_factor = 9.806 / 256.0    # sensor reports accel as 256.0 = 1G (9.8m/s^2). Convert to m/s^2.
 rospy.loginfo("Giving the razor IMU board 4 seconds to boot...")
@@ -136,7 +136,7 @@ rospy.loginfo("Publishing IMU data...")
 
 while not rospy.is_shutdown():
     line = ser.readline()
-    lines = line.replace("#YPRAG=","")   # Delete "#YPRAG="
+    lines = line.replace("#YPR=","")   # Delete "#YPRAG="
     words = string.split(lines,",")    # Fields split
 
 
