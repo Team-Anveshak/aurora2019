@@ -71,11 +71,9 @@ yaw_deg=0
 seq=0
 accel_factor = 9.806 / 256.0    # sensor reports accel as 256.0 = 1G (9.8m/s^2). Convert to m/s^2.
 rospy.loginfo("Giving the razor IMU board 4 seconds to boot...")
-rospy.sleep(5) # Sleep for 5 seconds to wait for the board to boot
-
+rospy.sleep(4) # Sleep for 5 seconds to wait for the board to boot
 
 ser.write('#o0' + chr(13))
-
 
 discard = ser.readlines()
 
@@ -129,7 +127,9 @@ rospy.loginfo(calib_data_print)
 ser.write('#o1' + chr(13))
 
 
-rospy.loginfo("Flushing first 200 IMU entries...")
+rospy.loginfo("Flushing first 100 IMU entries...")
+for x in range(0, 100):
+    line = ser.readline()
 
 rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
@@ -162,11 +162,6 @@ while not rospy.is_shutdown():
 
         imuMsg.yaw = yaw_deg
         pub.publish(imuMsg)
-
-
-
-
-
 
 ser.close
 #f.close
