@@ -45,7 +45,7 @@ import sys
 
 if __name__=="__main__":
 
-    rospy.init_node("arm_arduino")
+    rospy.init_node("drive_arduino")
     rospy.loginfo("ROS Serial Python Node")
 
     port_name = rospy.get_param('~port','/dev/drive')

@@ -51,7 +51,9 @@ void setup()
 
   digitalWrite(slpl, HIGH);
   digitalWrite(slpr, HIGH);
-
+  
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
 
   Wire.begin(address);
 

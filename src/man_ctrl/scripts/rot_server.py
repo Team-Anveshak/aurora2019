@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from man_ctrl.srv import rotate
+from man_ctrl.srv import *
 from man_ctrl.msg import WheelRpm
 from sensors.msg import Imu
 import numpy
@@ -13,13 +13,10 @@ class rotateService():
 		rospy.init_node('rot_server')
 		service = rospy.Service('rotator',rotate,self.rotator)
 
-		self.pub_serv = rospy.Publisher("motion",WheelRpm,queue_size = 10)
+		self.pub_serv = rospy.Publisher("drive_inp",WheelRpm,queue_size = 10)
 		rospy.Subscriber("imu", Imu, self.imuCallback)
 
-
-
-
-		self.bearing_tolerance = 1#rospy.get_param('~bearing_tolerance',0.1)
+		self.bearing_tolerance = 10#rospy.get_param('~bearing_tolerance',0.1)
 		self.kp = 0.05
 		self.curr_bear = 0.0
 
@@ -36,26 +33,36 @@ class rotateService():
 		self.last_bear = self.curr_bear
 
 		Rpm.max_rpm = 100
-		Rpm.theta = 0
+		#Rpm.theta = 0
 
 		while (abs(self.remainAngle) > self.bearing_tolerance):
 
 			Rpm.vel = 0
+			self.remainAngle = self.final_bear - self.curr_bear
+			self.omega = self.omegaManager(self.remainAngle)
+
+			if self.remainAngle>180 :
+				self.remainAngle = self.remainAngle - 360
+			elif self.remainAngle<-180 :
+				self.remainAngle = self.remainAngle + 360
+				
 			if self.remainAngle<0:
-				Rpm.omega = int(-self.omega)
-			else:
 				Rpm.omega = int(self.omega)
+			else:
+				Rpm.omega = int(-self.omega)
 
 			self.pub_serv.publish(Rpm)
 
-			#self.pControl()
+			'''#self.pControl()
 			self.setOmega = self.omegaManager(self.remainAngle)
-			self.actualOmega = (self.curr_bear - self.last_bear)/(time.time()-self.last_time)
+			self.actualOmega = 60*(self.curr_bear - self.last_bear)/(time.time()-self.last_time)
 			self.omega = self.omega + self.kp*(self.actualOmega - self.setOmega)
 
 			self.last_time = time.time()
-			self.last_bear = self.curr_bear
-		return plan_stateResponse("Rotate_finished")
+			self.last_bear = self.curr_bear'''
+		Rpm = WheelRpm()
+		self.pub_serv.publish(Rpm)
+		return rotateResponse("Rotate_finished")
 
 
 	# def pControl(self):
@@ -64,7 +71,7 @@ class rotateService():
 	# 	self.omega = self.omega + self.kp*(self.actualOmega - self.setOmega)
 
 	def omegaManager(self,angle):
-		precOmega = 10 + angle/12				#units in rpm giving a min of 10rpm
+		precOmega = 10 + abs(angle)/12				#units in rpm giving a min of 10rpm
 		reqOmega = precOmega - (precOmega%5)
 		return reqOmega
 
@@ -73,12 +80,12 @@ class rotateService():
 		rate = rospy.Rate(5)
 		while not rospy.is_shutdown():
 			rate.sleep()
-			#rospy.spin()
+			rospy.spin()
 
 
 
 	def imuCallback(self,msg):
-		self.curr_bear=-msg.yaw
+		self.curr_bear=msg.yaw
 
 
 if __name__ == '__main__':

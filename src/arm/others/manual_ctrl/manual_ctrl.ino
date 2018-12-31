@@ -110,57 +110,75 @@ void setup(){
 void loop(){
   nh.spinOnce();
   
-  if (pwm[0] >0){
+  if(pwm[0]== 0){
     digitalWrite(INA1,HIGH);
-  digitalWrite(INB1,LOW);
+    digitalWrite(INB1,HIGH);
+  } else if (pwm[0] >0){
+    digitalWrite(INA1,HIGH);
+    digitalWrite(INB1,LOW);
   }else{
     digitalWrite(INB1,HIGH);
-  digitalWrite(INA1,LOW);
+    digitalWrite(INA1,LOW);
   }
   analogWrite(PWM1,pwm[0]);
   
- if (pwm[1] >0){
+ if(pwm[1]== 0){
     digitalWrite(INA2,HIGH);
-  digitalWrite(INB2,LOW);
+    digitalWrite(INB2,HIGH);
+  } else if (pwm[1] >0){
+    digitalWrite(INA2,HIGH);
+    digitalWrite(INB2,LOW);
   }else{
     digitalWrite(INB2,HIGH);
-  digitalWrite(INA2,LOW);
+    digitalWrite(INA2,LOW);
   }
   analogWrite(PWM2,pwm[1]);
   
-  if (pwm[2] >0){
+  if(pwm[2]== 0){
     digitalWrite(INA3,HIGH);
-  digitalWrite(INB3,LOW);
+    digitalWrite(INB3,HIGH);
+  } else if (pwm[2] >0){
+    digitalWrite(INA3,HIGH);
+    digitalWrite(INB3,LOW);
   }else{
     digitalWrite(INB3,HIGH);
-  digitalWrite(INA3,LOW);
+    digitalWrite(INA3,LOW);
   }
   analogWrite(PWM3,pwm[2]);
   
-  if (pwm[3] >0){
+  if(pwm[3]== 0){
     digitalWrite(INA4,HIGH);
-  digitalWrite(INB4,LOW);
+    digitalWrite(INB4,HIGH);
+  } else if (pwm[3] >0){
+    digitalWrite(INA4,HIGH);
+    digitalWrite(INB4,LOW);
   }else{
     digitalWrite(INB4,HIGH);
-  digitalWrite(INA4,LOW);
+    digitalWrite(INA4,LOW);
   }
   analogWrite(PWM4,pwm[3]);
   
- if (pwm[4] >0){
+ if(pwm[4]== 0){
     digitalWrite(INA5,HIGH);
-  digitalWrite(INB5,LOW);
+    digitalWrite(INB5,HIGH);
+  } else if (pwm[4] >0){
+    digitalWrite(INA5,HIGH);
+    digitalWrite(INB5,LOW);
   }else{
     digitalWrite(INB5,HIGH);
-  digitalWrite(INA5,LOW);
+    digitalWrite(INA5,LOW);
   }
   analogWrite(PWM5,pwm[4]);
   
-  if (pwm[5] >0){
+  if(pwm[5]== 0){
     digitalWrite(INA6,HIGH);
-  digitalWrite(INB6,LOW);
+    digitalWrite(INB6,HIGH);
+  } else if (pwm[5] >0){
+    digitalWrite(INA6,HIGH);
+    digitalWrite(INB6,LOW);
   }else{
     digitalWrite(INB6,HIGH);
-  digitalWrite(INA6,LOW);
+    digitalWrite(INA6,LOW);
   }
   analogWrite(PWM6,pwm[5]);
 }

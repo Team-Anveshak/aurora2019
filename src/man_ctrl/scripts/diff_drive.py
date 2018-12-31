@@ -30,12 +30,11 @@ class drive():
         rpm = WheelRpm()
 		
         rpm.max_rpm = self.d*30
-        rpm.theta = 0
         
         if(abs(self.straight)>0.1 or abs(self.zero_turn)>0.1):
             
             rpm.vel = self.straight*self.d*30
-            rpm.omega = self.zero_turn*self.d*30
+            rpm.omega = self.zero_turn*self.d*10
 
         else:
 
@@ -46,7 +45,7 @@ class drive():
         self.pub_motor.publish(rpm)
     def joyCallback(self,msg):
         
-        self.straight  = -msg.axes[1]
+        self.straight  = msg.axes[1]
         self.zero_turn = msg.axes[2]
 
         if(msg.buttons[5]==1):

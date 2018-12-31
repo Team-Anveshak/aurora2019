@@ -1,6 +1,6 @@
 /* rosserial Subscriber For Locomotion Control */
 #include <ros.h>
-#include <man_ctrl/Wheel_rpm_diff.h>
+#include <man_ctrl/WheelRpm.h>
 
 #include <Wire.h>
 
@@ -9,37 +9,37 @@
 #define b3 17
 
 
-int forward = 0, rotate = 0;
+int vel = 0, omega = 0;
 int max_rpm = 30;
 
 ros::NodeHandle nh;
 
-man_ctrl::Wheel_rpm_diff RoverRpm;
+man_ctrl::WheelRpm RoverRpm;
 
 void loco(int address)
 {
 
   Wire.beginTransmission(address);
-  Wire.write(forward);
-  Wire.write(rotate);
+  Wire.write(vel);
+  Wire.write(omega);
   Wire.write(max_rpm);
   Wire.endTransmission();
 }
 
-void roverMotionCallback(const man_ctrl::Wheel_rpm_diff& RoverRpm)
+void roverMotionCallback(const man_ctrl::WheelRpm& RoverRpm)
 {
-  forward = int(constrain(RoverRpm.forward, -150, 150));
-  rotate = int(constrain(RoverRpm.rotate, -150, 150));
+  vel = int(constrain(RoverRpm.vel, -150, 150));
+  omega = int(constrain(RoverRpm.omega, -150, 150));
   max_rpm = RoverRpm.max_rpm;
-  forward = map(forward, -max_rpm, max_rpm, 0, max_rpm);
-  rotate = map(rotate, -max_rpm, max_rpm, 0, max_rpm);
+  vel = map(vel, -max_rpm, max_rpm, 0, max_rpm);
+  omega = map(omega, -max_rpm, max_rpm, 0, max_rpm);
 
   loco(b1);
   loco(b2);
   loco(b3);
 }
 
-ros::Subscriber<man_ctrl::Wheel_rpm_diff> locomotion_sub("loco/wheel_rpm", &roverMotionCallback);
+ros::Subscriber<man_ctrl::WheelRpm> locomotion_sub("motion", &roverMotionCallback);
 
 void setup() {
   nh.initNode();

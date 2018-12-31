@@ -19,8 +19,8 @@ class drive():
 
         #insert subscriber to drive control
 
-        self.straight = 0
-        self.zero_turn = 0
+        self.vel = 0
+        self.omega = 0
         self.d = 1
         self.max_rpm=30.0
 
@@ -30,22 +30,22 @@ class drive():
             self.main()
             rate.sleep()
 
-    def rotateClient(self):
+    '''def rotateClient(self):
         rospy.wait_for_service('rotator')
         rotateFunc = rospy.ServiceProxy('rotator',rotate)
 
-        goal = rotateFunc(self.theta)
+        goal = rotateFunc(self.theta)'''
 
     def main(self):
 
         rpm = WheelRpm()
+	rpm.max_rpm= self.max_rpm
 
 
+        if(abs(self.vel)>0 or abs(self.omega)>0):
 
-        if(abs(self.straight)>0 or abs(self.zero_turn)>0):
-
-            rpm.vel = self.straight*self.d*30
-            rpm.omega = self.zero_turn*self.d*10
+            rpm.vel = self.vel
+            rpm.omega = self.omega
 
         else:
 
@@ -56,8 +56,9 @@ class drive():
         self.pub_motor.publish(rpm)
 
     def driveCallback(self,msg):
-        self.straight=msg.vel
+        self.vel=msg.vel
         self.max_rpm=msg.max_rpm
+        self.omega=msg.omega
 
 
 

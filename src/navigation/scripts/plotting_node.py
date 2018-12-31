@@ -20,7 +20,19 @@ class Plot():
 		self.pt = plt.text(0,0, 'hello', fontsize=8,transform=ccrs.Geodetic()) 
 		
 		#array of way points
-		self.dest_lat_cont,self.dest_lon_cont = [],[]
+		file_path = "/home/anveshak/aurora2019/src/navigation/config/gps_data.txt"
+		try:
+			self.f=open(file_path,'r')
+			self.dest_lat_cont,self.dest_lon_cont = [],[]
+			for l in self.f:
+				row = l.split()
+				self.dest_lat_cont.append(row[0])
+				self.dest_lon_cont.append(row[1])
+		except Exception:
+			print colored("GPS data file not opened",'red')
+			sys.exit(0)
+			
+		'''self.dest_lat_cont,self.dest_lon_cont = [],[]
 		print colored('\n Enter GPS way-points one by one in latitude<>longitude format \n', 'green')
 		print colored('$  Type ok once done', 'white')
 		l = raw_input('GPSprompt >>>')
@@ -28,7 +40,7 @@ class Plot():
 			row = l.split()
 			self.dest_lat_cont.append(row[0])
 			self.dest_lon_cont.append(row[1])
-			l = raw_input('GPSprompt >>>')
+			l = raw_input('GPSprompt >>>')'''
 		
 		#Plotting the waypoints	
 		max_way_lat = float(max(self.dest_lat_cont));

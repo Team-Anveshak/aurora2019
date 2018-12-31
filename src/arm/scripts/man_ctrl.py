@@ -13,7 +13,7 @@ class Arm:
 		self.set = Pwm()
 
 	def main(self):
-		r = rospy.Rate(5)
+		r = rospy.Rate(4)
 		while not rospy.is_shutdown():
 			self.pub.publish(self.set)
 			print self.set 
@@ -21,32 +21,38 @@ class Arm:
 			r.sleep() 
 		
 	def joyCallback(self,msg):
-		
+		#Roll and Grip swapped
 		if(abs(msg.axes[2]) > 0.2):
-			self.set.base = -int(150.0*msg.axes[2])
+			if msg.axes[2] < 0:
+				self.set.base = -int(50.0*msg.axes[2])
+			else:
+				self.set.base = -int(150.0*msg.axes[2])
 		else:
 			self.set.base =0
 			
-		if(abs(msg.axes[0]) > 0.2): #grip, roll interchanged
+		if(abs(msg.axes[0]) > 0.2):
 			self.set.grip = int(150.0*msg.axes[0])
 		else:
 			self.set.grip  =0
 		
 	
 		if(abs(msg.axes[3]) > 0.2):
-			self.set.shoulder = int(150.0*msg.axes[3])
+			if msg.axes[3] > 0:
+				self.set.shoulder = -int(30.0*msg.axes[3])
+			else:
+				self.set.shoulder = -int(250.0*msg.axes[3])
 		else:
 			self.set.shoulder =0
 		
 		
 		if(abs(msg.axes[1]) > 0.2):
-			self.set.elbow = int(150.0*msg.axes[1])
+			self.set.elbow = -int(150.0*msg.axes[1])
 		else:
 			self.set.elbow =0
 		
 		self.set.pitch = 200*( msg.buttons[5]-msg.buttons[7]) 
 		
-		self.set.roll = 200*( msg.buttons[6]-msg.buttons[4]) 
+		self.set.roll = 150*( msg.buttons[6]-msg.buttons[4]) 
 			
 if __name__ == '__main__':
 	x = Arm()
