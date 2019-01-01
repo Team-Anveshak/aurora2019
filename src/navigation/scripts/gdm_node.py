@@ -8,6 +8,7 @@ from termcolor import colored
 from sensor_msgs.msg import NavSatFix
 from navigation.msg import Goal,Planner_state
 from navigation.srv import plan_state
+# from obj_detect.srv import obj_detect
 
 def signal_handler(signal, frame):  #For catching keyboard interrupt Ctrl+C
     print "\nProgram exiting....."
@@ -18,10 +19,11 @@ class GPS() :
 		rospy.init_node("gdm")
 		rospy.wait_for_service('Planner_state_ctrl')
 		self.state_srv = rospy.ServiceProxy('Planner_state_ctrl', plan_state)
+        # self.obj_srv = rospy.ServiceProxy('obj_detect', obj_detect)
 
 		self.pub_goal = rospy.Publisher('goal', Goal,queue_size=10) 	#Publisher to planner
 		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
-		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback) 
+		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback)
 
 		file_path = "/home/anveshak/aurora2019/src/navigation/config/gps_data.txt"
 		try:
@@ -50,12 +52,14 @@ class GPS() :
 		self.bearing=0
 		self.planner_status = 0
 		self.distance = 0
-		thread.start_new_thread(self.key_intrp,()) 			
+        self.obj_detect_dist = 0
+		thread.start_new_thread(self.key_intrp,())
+        self.obj_threshold = 2.0
 
 
 	def run(self):
 		goal = Goal()
-		
+
 		while not rospy.is_shutdown():
 			for i in range(len(self.dest_lat_cont)):
 				self.srv("rst")
@@ -80,15 +84,29 @@ class GPS() :
 						rate.sleep()
 					except Exception,e:
 						print colored("Error",'red') + "%s"%e
-						
+
 				if(self.planner_status == 1):
 					'''goal.distance = 0.0
 					goal.bearing = 0.0
 					self.pub_goal.publish(goal)'''
 					#ball detecton service
 					self.srv("rst")
+                    self.obj_detect = self.obj_srv()
+                    counter = 3
+                    while self.obj_detect_dist>self.obj_threshold and counter>=0:
+                        if(self.obj_detect_dist!=0):
+                            self.pub_goal.publish(self.obj_detect_dist)
+                            self.srv("contin")
+                            rate = rospy.Rate(0.2)
+            				rate.sleep()
+                            self.srv("rst")
+                            counter--
+                        else:
+                            self.obj_detect_dist = self.obj_srv()
+                            counter--
+
 					print colored("\n Moving to next GPS point.. \n",'white')
-			
+
 			goal.distance = 0.0
 			goal.bearing = 0.0
 			self.pub_goal.publish(goal)
@@ -150,13 +168,13 @@ class GPS() :
 	  			self.srv("rst")
 	  		else:
   				print 'Invalid command'
-		
+
 if __name__ == '__main__':
 	x = raw_input('Do you want to start the node? (y/n) : ')
 
 	gps = GPS()
 	signal.signal(signal.SIGINT, signal_handler)
-	
+
 	if(x == 'y'):
 		gps.run()
 	else:
