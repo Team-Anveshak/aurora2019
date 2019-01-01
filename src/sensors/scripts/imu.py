@@ -62,19 +62,19 @@ except serial.serialutil.SerialException:
 
 roll=0
 pitch=0
-yaw=0
+yaw_deg=0
 seq=0
 accel_factor = 9.806 / 256.0    # sensor reports accel as 256.0 = 1G (9.8m/s^2). Convert to m/s^2.
 rospy.loginfo("Giving the razor IMU board 4 seconds to boot...")
 rospy.sleep(4) # Sleep for 5 seconds to wait for the board to boot
-
+'''
 ser.write('#o0' + chr(13))
 
 discard = ser.readlines()
 
 #set output mode
 ser.write('#ox' + chr(13)) # To start display angle and sensor reading in text
-
+'''
 rospy.loginfo("Writing calibration values to razor IMU board...")
 #set calibration values
 ser.write('#caxm' + str(accel_x_min) + chr(13))
@@ -108,7 +108,7 @@ else:
 ser.write('#cgx' + str(gyro_average_offset_x) + chr(13))
 ser.write('#cgy' + str(gyro_average_offset_y) + chr(13))
 ser.write('#cgz' + str(gyro_average_offset_z) + chr(13))
-
+'''
 #print calibration values for verification by user
 ser.flushInput()
 ser.write('#p' + chr(13))
@@ -120,7 +120,7 @@ rospy.loginfo(calib_data_print)
 
 #start datastream
 ser.write('#o1' + chr(13))
-
+'''
 
 rospy.loginfo("Flushing first 100 IMU entries...")
 for x in range(0, 100):
@@ -131,7 +131,7 @@ rospy.loginfo("Publishing IMU data...")
 
 while not rospy.is_shutdown():
     line = ser.readline()
-    lines = line.replace("#YPRAG=","")   # Delete "#YPRAG="
+    lines = line.replace("#YPR=","")   # Delete "#YPRAG="
     words = string.split(lines,",")    # Fields split
 
 
@@ -139,7 +139,7 @@ while not rospy.is_shutdown():
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
         try:
 
-            yaw_deg = -float(words[0])+90
+            yaw_deg = float(words[0])+180
             yaw_deg = yaw_deg + imu_yaw_calibration
             if yaw_deg > 180.0:
                 yaw_deg = yaw_deg - 360.0

@@ -23,7 +23,7 @@ class GPS() :
 		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
 		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback) 
 
-		file_path = "~/aurora2019/src/navigation/config/gps_data.txt"
+		file_path = "/home/anveshak/aurora2019/src/navigation/config/gps_data.txt"
 		try:
 			self.f=open(file_path,'r')
 			self.dest_lat_cont,self.dest_lon_cont = [],[]
@@ -33,6 +33,7 @@ class GPS() :
 				self.dest_lon_cont.append(row[1])
 		except Exception:
 			print colored("GPS data file not opened",'red')
+			sys.exit(0)
 
 		'''self.dest_lat_cont,self.dest_lon_cont = [],[]			#array of way points
 		print "Enter GPS way-points one by one in latitude<>longitude format"
@@ -57,6 +58,7 @@ class GPS() :
 		
 		while not rospy.is_shutdown():
 			for i in range(len(self.dest_lat_cont)):
+				self.srv("rst")
 				self.dest_lat= float(self.dest_lat_cont[i])
 				self.dest_lon= float(self.dest_lon_cont[i])
 				self.dist_gps,self.bearing=self.cal()
@@ -64,10 +66,11 @@ class GPS() :
 				goal.distance = self.dist_gps
 				goal.bearing = self.bearing
 				self.pub_goal.publish(goal)
+				self.srv("contin")
 				rate = rospy.Rate(1)
 				rate.sleep()
 
-				while(~self.planner_status):
+				while(self.planner_status == 0):
 					try:
 						self.dist_gps,self.bearing=self.cal()
 						goal.distance = self.dist_gps
@@ -77,28 +80,37 @@ class GPS() :
 						rate.sleep()
 					except Exception,e:
 						print colored("Error",'red') + "%s"%e
-				#ball detecton service
-				self.srv("rst")
-
-			print 'Successfully past all waypoints'
+						
+				if(self.planner_status == 1):
+					'''goal.distance = 0.0
+					goal.bearing = 0.0
+					self.pub_goal.publish(goal)'''
+					#ball detecton service
+					self.srv("rst")
+					print colored("\n Moving to next GPS point.. \n",'white')
+			
+			goal.distance = 0.0
+			goal.bearing = 0.0
+			self.pub_goal.publish(goal)
+			print colored('Successfully past all waypoints!!','orange')
 
 
 	def srv(self,arg):
-		temp = [0,0,0]
+		temp = plan_state()
 		if(arg == "pause"):
 			print "Pausing...."
-			temp[0] = 1
+			temp.pause = 1
 		elif(arg == "contin"):
 			print "Continuing..."
-			temp[1] = 1
+			temp.contin = 1
 		elif(arg == "rst"):
 			print "Resetting..."
-			temp[2] = 1
+			temp.rst = 1
 		else:
-			return colored('Error','red')
+			return colored('Error calling service','red')
 
 		try:
-			resp = self.state_srv(temp[0],temp[1],temp[2])
+			resp = self.state_srv(temp)
 			print "Service response: %s"%resp
 			return resp
 		except rospy.ServiceException, e:
@@ -133,7 +145,7 @@ class GPS() :
 			if (text == 'p'):
 				self.srv("pause")
 	  		elif (text == 'c'):
-	  			self.srv("cotin")
+	  			self.srv("contin")
 	  		elif (text == 'r'):
 	  			self.srv("rst")
 	  		else:

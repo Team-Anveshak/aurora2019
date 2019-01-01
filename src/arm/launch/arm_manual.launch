@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="rosserial_python" type="serial_node.py" name ="Arm_arduino">
+	<param name="port" value="/dev/arm"/>
+  </node> 
+  <node pkg="arm" type="man_ctrl.py" name="Arm" output="screen"/>
+  
+  <!-- <node respawn="true" pkg="joy" type="joy_node" name="joy_arm" >
+      <remap from="joy" to="joy_arm"/>
+      <param name="dev" type="string" value="/dev/input/js1" />
+  </node> -->
+  
+</launch>

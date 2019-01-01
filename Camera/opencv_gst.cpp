@@ -1,3 +1,6 @@
+//Execute with:   g++ opencv_gst.cpp -o app `pkg-config --cflags --libs opencv`
+// Install accepted answer in https://devtalk.nvidia.com/default/topic/1020915/opencv-and-webcam-problem-pixel-format-of-incoming-image-is-unsupported-by-opencv/
+
 #include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>

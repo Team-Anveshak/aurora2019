@@ -9,7 +9,7 @@ from man_ctrl.srv import *
 from man_ctrl.msg import WheelRpm
 import math
 import thread
-
+from termcolor import colored
 
 class Planner():
 
@@ -23,7 +23,7 @@ class Planner():
         try:
             rospy.Subscriber("imu",Imu, self.imuCallback)
             rospy.Subscriber("goal",Goal,self.goalCallback)
-            rospy.Subscriber("pos",Pos,self.posCallback)
+            #rospy.Subscriber("pos",Pos,self.posCallback)
         except Exception,e:
             print e
 
@@ -53,31 +53,31 @@ class Planner():
 
     def main(self):
         if(self.state=="run"):
-            if(self.distance_to_dest_init>self.dist_tolerance):
-                if(self.distance_travelled<(self.distance_to_dest_init-self.dist_tolerance)): # replace with distacetodest > tolerance
+                if(self.distance_to_dest >self.dist_tolerance): # replace with distacetodest > tolerance
+                    self.pub_planner_state.publish(0)
                     if(abs(self.bearing_dest-self.bearing_curr)<self.bearing_tolerance):
+                    	if(abs(self.bearing_dest-self.bearing_curr)<4*self.bearing_tolerance):
                         mult = (self.distance_to_dest/self.distance_to_dest_init)*self.forward_mult
                         forward_vel = self.forward_vel_cal(self.forward_min,self.forward_max,mult)
                         self.drive_pub(forward_vel,0,self.forward_max)  #setup a primitive pid w.r.t to diatnce to be travelled.
                     else:
                         try:
-                			result = self.drive_rotate_srv(float(self.bearing_dest))
-                            # print result
-                            # while resul
+				print colored('\n Sending request for %f'%self.bearing_dest,'white')
+				result = self.drive_rotate_srv(float(self.bearing_dest))
+				print result
                         except rospy.ServiceException,e :
                             print "Service call failed: %s"%e
                         #send service call to drive node to turn to self.bearing destination
                 else:
+                    self.pub_planner_state.publish(1)
                     rospy.loginfo("destination reached")
-            else:
-                rospy.loginfo("destination reached")
-
 
         elif(self.state=="pause"):
             self.drive_pub(0.0,0.0,self.forward_max)
             pass
         elif(self.state=="stop"):
             self.reset()
+            self.distance_to_dest_init = self.distance_to_dest
             pass
 
     def obs_scanner(self):
@@ -110,13 +110,14 @@ class Planner():
         self.forward_mult       = float(rospy.get_param('~forward_mult', 1.0))
 
     def load_vars(self):
-        self.state                  = "pause"  # states are 'run','pause','stop'
+        self.state                  = "stop"  # states are 'run','pause','stop'
         self.distance_to_dest_init  = 0.0
         self.distance_to_dest       = 0.0
         self.distance_travelled     = 0.0   #this is the distance that is travelled along the destination so need to convert it from the distance value from the distance calculator reset it when new goal is recieved
         self.bearing_dest           = 0.0
         self.bearing_curr           = 0.0   #current bearing of the rover
-
+	
+	
     def imuCallback(self,msg):
         self.bearing_curr = msg.yaw
 
