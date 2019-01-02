@@ -8,7 +8,7 @@ from termcolor import colored
 from sensor_msgs.msg import NavSatFix
 from navigation.msg import Goal,Planner_state
 from navigation.srv import plan_state
-# from obj_detect.srv import obj_detect
+from obj_detect.srv import *
 
 def signal_handler(signal, frame):  #For catching keyboard interrupt Ctrl+C
     print "\nProgram exiting....."
@@ -19,7 +19,9 @@ class GPS() :
 		rospy.init_node("gdm")
 		rospy.wait_for_service('Planner_state_ctrl')
 		self.state_srv = rospy.ServiceProxy('Planner_state_ctrl', plan_state)
-        # self.obj_srv = rospy.ServiceProxy('obj_detect', obj_detect)
+		
+		rospy.wait_for_service('obj_detect')
+		self.obj_srv = rospy.ServiceProxy('obj_detect', obj_detect)
 
 		self.pub_goal = rospy.Publisher('goal', Goal,queue_size=10) 	#Publisher to planner
 		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
@@ -86,11 +88,16 @@ class GPS() :
 						print colored("Error",'red') + "%s"%e
 
 				if(self.planner_status == 1):
-					'''goal.distance = 0.0
-					goal.bearing = 0.0
-					self.pub_goal.publish(goal)'''
-					#ball detecton service
 					self.srv("rst")
+					try:
+						resp = self.obj_srv()
+						print "Service response: %s"%resp
+						return resp
+					except rospy.ServiceException, e:
+						print "Service call failed: %s"%e
+						return 'Error'
+			
+					
                     self.obj_detect = self.obj_srv()
                     counter = 3
                     while self.obj_detect_dist>self.obj_threshold and counter>=0:

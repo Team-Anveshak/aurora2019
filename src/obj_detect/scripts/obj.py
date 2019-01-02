@@ -28,13 +28,14 @@ class OBJ() :
         self.bearing_curr = 0.0
         self.bearing_offset = 30.0
         self.time_delay =  60.0
+        
     def start(self):
         rate = rospy.Rate(1)
         while not rospy.is_shutdown():
             rate.sleep()
 
     def obj_detect_func(self,msg):
-        # print("msg1")
+        
         capture = cv2.VideoCapture(0)
         capture.set(cv2.CAP_PROP_FRAME_WIDTH,self.video_width)
         capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.video_height)
@@ -42,6 +43,8 @@ class OBJ() :
         n=0
         rect_per=0
         stime = time.time()
+        
+        
         while not rospy.is_shutdown() and t:
             if (abs(time.time() - stime)>self.time_delay):
                 stime = time.time()
@@ -53,7 +56,6 @@ class OBJ() :
                     result = self.drive_rotate_srv(float(self.bearing_curr+self.bearing_offset))
                     n++
 
-            # print("msg2")
             ret, frame = capture.read()
             if ret:
                 results = tfnet.return_predict(frame)
@@ -74,6 +76,7 @@ class OBJ() :
         capture.release()
         cv2.destroyAllWindows()
         return obj_detectResponse(rect_per)
+        
     def imuCallback(self,msg):
         self.bearing_curr = msg.yaw
 
@@ -82,7 +85,7 @@ if __name__ == '__main__':
     options = {
         'model': 'cfg/yolo.cfg',
         'load': 'bin/yolov2.weights',
-        'threshold': 0.1
+        'threshold': 0.15
     }
 
     tfnet = TFNet(options)

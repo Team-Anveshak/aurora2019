@@ -21,7 +21,6 @@ class Arm:
 			r.sleep() 
 		
 	def joyCallback(self,msg):
-		#Roll and Grip swapped
 		if(abs(msg.axes[2]) > 0.2):
 			if msg.axes[2] < 0:
 				self.set.base = -int(50.0*msg.axes[2])
@@ -31,9 +30,9 @@ class Arm:
 			self.set.base =0
 			
 		if(abs(msg.axes[0]) > 0.2):
-			self.set.grip = int(150.0*msg.axes[0])
+			self.set.roll = int(150.0*msg.axes[0])
 		else:
-			self.set.grip  =0
+			self.set.roll  =0
 		
 	
 		if(abs(msg.axes[3]) > 0.2):
@@ -52,7 +51,7 @@ class Arm:
 		
 		self.set.pitch = 200*( msg.buttons[5]-msg.buttons[7]) 
 		
-		self.set.roll = 150*( msg.buttons[6]-msg.buttons[4]) 
+		self.set.grip = 150*( msg.buttons[6]-msg.buttons[4]) 
 			
 if __name__ == '__main__':
 	x = Arm()

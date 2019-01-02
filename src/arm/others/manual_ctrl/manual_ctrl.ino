@@ -58,11 +58,11 @@ void Set(const arm::Pwm& data)
 {
  
   
-  pwm[0] = data.grip;
+  pwm[0] = data.roll;
   pwm[5] = data.shoulder;
   pwm[1] = data.elbow;
   pwm[2] = data.pitch;
-  pwm[3] = data.roll;
+  pwm[3] = data.grip;
   pwm[4] = data.base;
 }
 

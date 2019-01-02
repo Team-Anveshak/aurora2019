@@ -264,8 +264,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         temp++;  
     }
     FILE *fp;
-    //fp = fopen("/home/anveshak/aurora2019/src/obj_detect/config/obj_detect.txt", "w");
-	fp = fopen("/home/anveshak/file.txt", "w");
+    fp = fopen("/home/anveshak/aurora2019/src/obj_detect/obj_detect.txt", "w");
 	
     if(detect_freq > freq_thresh)
     {
