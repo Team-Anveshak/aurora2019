@@ -1,5 +1,0 @@
-import os
-
-os.system("./darknet detector demo cfg/coco.data cfg/yolov2-tiny.cfg WEIGHTS/yolov2-tiny.weights -thresh 0.15 -c 0")
-
-
