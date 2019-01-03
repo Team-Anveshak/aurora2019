@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(sensors)
+project(science)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,14 +8,13 @@ project(sensors)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  roscpp
   rospy
-  roslint
   std_msgs
+  sensor_msgs
   message_generation
+  joy
 )
-
-#For nmea
-catkin_python_setup()
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -51,11 +50,10 @@ catkin_python_setup()
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
+add_message_files(
    FILES
-   Imu.msg
-   PanTilt.msg 
-)
+   Science.msg   
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -74,11 +72,9 @@ catkin_python_setup()
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
-   std_msgs  # Or other packages containing msgs
+   std_msgs
  )
 
-#For nmea
-catkin_package()
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
 ################################################
@@ -110,8 +106,8 @@ catkin_package()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES sensors
-#  CATKIN_DEPENDS rospy
+#  LIBRARIES science
+#  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -126,22 +122,9 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-
-
-#For nmea
-install(PROGRAMS
-   scripts/nmea_serial
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-roslint_python()
-roslint_add_test()
-
-
-
-
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/sensors.cpp
+#   src/${PROJECT_NAME}/science.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -152,7 +135,7 @@ roslint_add_test()
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/sensors_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/science_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -209,7 +192,7 @@ roslint_add_test()
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_sensors.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_science.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
