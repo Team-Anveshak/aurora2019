@@ -14,16 +14,11 @@ from tf.transformations import quaternion_from_euler
 degrees2rad = math.pi/180.0
 imu_yaw_calibration = 0.0
 
-
-
 rospy.init_node("razor_node")
 pub = rospy.Publisher('imu', Imu, queue_size=1)
 diag_pub_time = rospy.get_time();
 
 imuMsg = Imu()
-
-
-
 
 default_port='/dev/ttyUSB0'
 port = rospy.get_param('~port', default_port)
@@ -157,8 +152,6 @@ while not rospy.is_shutdown():
         except Exception as e:
             print e
             # pass
-
-
 
         imuMsg.yaw = yaw_deg
         pub.publish(imuMsg)

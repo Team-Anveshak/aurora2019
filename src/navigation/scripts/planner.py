@@ -59,6 +59,7 @@ class Planner():
                     	if(abs(self.bearing_dest-self.bearing_curr)<4*self.bearing_tolerance):
                         mult = (self.distance_to_dest/self.distance_to_dest_init)*self.forward_mult
                         forward_vel = self.forward_vel_cal(self.forward_min,self.forward_max,mult)
+                        mult = 1 if mult < 1 
                         self.drive_pub(forward_vel,0,self.forward_max)  #setup a primitive pid w.r.t to diatnce to be travelled.
                     else:
                         try:
