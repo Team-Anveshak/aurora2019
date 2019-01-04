@@ -22,7 +22,6 @@ int servo_then;
 
 ros::NodeHandle nh;
 
-man_ctrl::WheelRpm RoverRpm;
 
 void loco(int address)
 {
@@ -49,39 +48,12 @@ void roverMotionCallback(const man_ctrl::WheelRpm& RoverRpm)
 
 void servoCallback(const sensors::PanTilt& Control)
 {
-  panAngle = Control.pan;
-  tiltAngle = Control.tilt;
+  panAngle = constrain(Control.pan,1,170);
+  tiltAngle = constrain(Control.tilt,5,150);
+  
   pan.write(panAngle);
   tilt.write(tiltAngle);
 
-  if (panAngle == 1) {
-    if (abs(millis() - servo_then) > 100) {
-      pan.write(pan_pos);
-      if (pan_pos < 179) pan_pos++;
-      servo_then = millis();
-    }
-  }
-  else if (panAngle == -1) {
-    if (abs(millis() - servo_then) > 100) {
-      pan.write(pan_pos);
-      if (pan_pos > 1) pan_pos--;
-      servo_then = millis();
-    }
-  }
-  if (tiltAngle == 1) {
-    if (abs(millis() - servo_then) > 100) {
-      tilt.write(tilt_pos);
-      if (tilt_pos < 179) tilt_pos++;
-      servo_then = millis();
-    }
-  }
-  else if (tiltAngle == -1) {
-    if (abs(millis() - servo_then) > 100) {
-      tilt.write(tilt_pos);
-      if (tilt_pos > 1) tilt_pos--;
-      servo_then = millis();
-    }
-  }
 }
 
 ros::Subscriber<man_ctrl::WheelRpm> locomotion_sub("motion", &roverMotionCallback);
