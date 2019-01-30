@@ -5,7 +5,3 @@ int16 sol1
 int16 sol2
 int16 nwire
 int16 servo
-float32 Temp
-float32 pressure
-float32 luminosity
-float32 UVintensity

@@ -25,20 +25,20 @@ class Servo():
 		servo_msg = PanTilt()
 		if time.time() - self.lastTime>0.1:
 			if(self.panAngle>0 and self.panAngle<180):
-				self.panAngle = self.panAngle + self.panCtrl
+				self.panAngle = self.panAngle + 2*self.panCtrl
 			else:
 				if self.panAngle<=0:
 					self.panAngle = 1
 				if self.panAngle>=180:
 					self.panAngle = 179
 
-			if(self.tiltAngle>0 and self.tiltAngle<180):
-				self.tiltAngle = self.tiltAngle - self.tiltCtrl
+			if(self.tiltAngle>0 and self.tiltAngle<138):
+				self.tiltAngle = self.tiltAngle - 2*self.tiltCtrl
 			else:
 				if self.tiltAngle<=0:
 					self.tiltAngle = 1
-				if self.tiltAngle>=180:
-					self.tiltAngle = 179
+				if self.tiltAngle>=137:
+					self.tiltAngle = 137
 
 			servo_msg.pan = self.panAngle
 			servo_msg.tilt = self.tiltAngle

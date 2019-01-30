@@ -47,20 +47,23 @@ class Planner():
 
     def spin(self):
         rate = rospy.Rate(1)
+	self.bearing_dest = self.bearing_curr
         while not rospy.is_shutdown():
             self.main() #main func
             rate.sleep()
 
     def main(self):
+	
         if(self.state=="run"):
-                if(self.distance_to_dest >self.dist_tolerance): # replace with distacetodest > tolerance
+                if(self.distance_to_dest > self.dist_tolerance): # replace with distacetodest > tolerance
                     self.pub_planner_state.publish(0)
                     if(abs(self.bearing_dest-self.bearing_curr)<self.bearing_tolerance):
-                    	if(abs(self.bearing_dest-self.bearing_curr)<4*self.bearing_tolerance):
-                        mult = (self.distance_to_dest/self.distance_to_dest_init)*self.forward_mult
-                        forward_vel = self.forward_vel_cal(self.forward_min,self.forward_max,mult)
-                        mult = 1 if mult < 1 
-                        self.drive_pub(forward_vel,0,self.forward_max)  #setup a primitive pid w.r.t to diatnce to be travelled.
+                    	if(abs(self.bearing_dest-self.bearing_curr)<self.bearing_tolerance):
+		                #mult = (self.distance_to_dest/self.distance_to_dest_init)*self.forward_mult
+		                forward_vel = self.forward_vel_cal(self.forward_min,self.forward_max,2)
+		                #if mult < 1 :
+				#	mult = 1 
+		                self.drive_pub(forward_vel,0,self.forward_max)  #setup a primitive pid w.r.t to diatnce to be travelled.
                     else:
                         try:
 				print colored('\n Sending request for %f'%self.bearing_dest,'white')
@@ -71,13 +74,14 @@ class Planner():
                         #send service call to drive node to turn to self.bearing destination
                 else:
                     self.pub_planner_state.publish(1)
+		    self.drive_pub(0.0,0.0,self.forward_max)
                     rospy.loginfo("destination reached")
 
         elif(self.state=="pause"):
             self.drive_pub(0.0,0.0,self.forward_max)
             pass
         elif(self.state=="stop"):
-            self.reset()
+            #self.reset()
             self.distance_to_dest_init = self.distance_to_dest
             pass
 
@@ -103,8 +107,8 @@ class Planner():
         return plan_stateResponse(self.state)
 
     def load_params(self):
-        self.dist_tolerance     = float(rospy.get_param('~dist_tolerance', 5.0))        #in metres ; default 5 metre
-        self.bearing_tolerance  = float(rospy.get_param('~bearing_tolerance', 10.0))    #in degrees ; default 10 degrees
+        self.dist_tolerance     = float(rospy.get_param('~dist_tolerance', 1.5))        #in metres ; default 5 metre
+        self.bearing_tolerance  = float(rospy.get_param('~bearing_tolerance', 5.0))    #in degrees ; default 10 degrees
         self.forward_max        = float(rospy.get_param('~forward_max', 40.0))          #in terms of pwm now
         self.forward_min        = float(rospy.get_param('~forward_min', 20.0))          #in terms of pwm now
         self.turn_vel_max       = float(rospy.get_param('~turn_max', 20.0))             #in terms of pwm value
@@ -113,7 +117,7 @@ class Planner():
     def load_vars(self):
         self.state                  = "stop"  # states are 'run','pause','stop'
         self.distance_to_dest_init  = 0.0
-        self.distance_to_dest       = 0.0
+        self.distance_to_dest       = 400.0
         self.distance_travelled     = 0.0   #this is the distance that is travelled along the destination so need to convert it from the distance value from the distance calculator reset it when new goal is recieved
         self.bearing_dest           = 0.0
         self.bearing_curr           = 0.0   #current bearing of the rover
@@ -132,6 +136,7 @@ class Planner():
     def reset(self): #for resetting all variables to start position, sending the distance calculator to reset etc
         self.load_vars()
         self.load_params()
+	self.drive_pub(0.0,0.0,self.forward_max)
         #need to reset distance calculator
 
     def drive_pub(self,vel,omega,max_vel,theta=1000): #used to send the drive node the info, the value of theta taken is 0 to 359 if any other value is given the service won't be called.

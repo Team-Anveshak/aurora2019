@@ -8,7 +8,6 @@ from man_ctrl.msg import WheelRpm
 from sensor_msgs.msg import NavSatFix
 from navigation.msg import Goal,Planner_state
 from navigation.srv import *
-from obj_detect.srv import *
 
 def signal_handler(signal, frame):  #For catching keyboard interrupt Ctrl+C
     print "\nProgram exiting....."
@@ -20,9 +19,7 @@ class GPS() :
 		rospy.wait_for_service('Planner_state_ctrl')
 		self.state_srv = rospy.ServiceProxy('Planner_state_ctrl', plan_state)
 		
-		rospy.wait_for_service('obj_detect')
-		self.obj_srv = rospy.ServiceProxy('obj_detect', obj_detect)
-
+		
 		self.pub_goal = rospy.Publisher('goal', Goal,queue_size=10) 	#Publisher to planner
 		self.pub_drive=rospy.Publisher("drive_inp",WheelRpm,queue_size=10)
 		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
@@ -90,7 +87,8 @@ class GPS() :
 
 				if(self.planner_status == 1):
 					self.srv("rst")
-					try:
+					print colored("\n\n Reached stage1 GPS %d   \n\n"%(i+1),'white')
+					'''try:
 						result = self.obj_srv()
 						print "Service response: %s"%resp
 					except rospy.ServiceException, e:
@@ -105,7 +103,7 @@ class GPS() :
 							print colored("\n\n Object detected : \"BLUE BOTTLE\"  \n\n",'white')
 						elif (i == "disc") :
 							print colored("\n\n Object detected : \"YELLOW DISC\"  \n\n",'white')
-					print colored("-----------------------------\n")
+					print colored("-----------------------------\n")'''
 				print colored("\n Moving to next GPS point.. \n",'white')
 
 			print colored('Successfully past all waypoints!!','white')

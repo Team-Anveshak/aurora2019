@@ -45,7 +45,7 @@ class Test():
         step.nwire = self.NW
         step.servo = self.Servo
         self.pub_motor.publish(step)
-        time.sleep(0.005)
+        time.sleep(0.0005)
         #print "hgk"
 
     def joyCallback(self,msg):

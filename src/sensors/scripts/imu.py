@@ -20,7 +20,7 @@ diag_pub_time = rospy.get_time();
 
 imuMsg = Imu()
 
-default_port='/dev/ttyUSB0'
+default_port='/dev/imu'
 port = rospy.get_param('~port', default_port)
 
 

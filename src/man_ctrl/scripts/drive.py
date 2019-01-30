@@ -22,7 +22,7 @@ class drive():
         self.vel = 0
         self.omega = 0
         self.d = 1
-        self.max_rpm=30.0
+        self.max_rpm=40.0
 
     def spin(self):
         rate = rospy.Rate(10)
@@ -57,7 +57,7 @@ class drive():
 
     def driveCallback(self,msg):
         self.vel=msg.vel
-        self.max_rpm=msg.max_rpm
+        #self.max_rpm=msg.max_rpm
         self.omega=msg.omega
 
 
