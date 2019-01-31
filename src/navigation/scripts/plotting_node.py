@@ -48,7 +48,7 @@ class Plot():
 		min_way_lat = float(min(self.dest_lat_cont));
 		min_way_lon = float(min(self.dest_lon_cont));	
 		for i in range(len(self.dest_lat_cont)):
-			plt.plot(float(self.dest_lon_cont[i]),float(self.dest_lat_cont[i]),color='green', marker="*", 				markersize=10, transform=ccrs.Geodetic(),)
+			plt.plot(float(self.dest_lon_cont[i]),float(self.dest_lat_cont[i]),color='green', marker="$%d$"%(i+1), 				markersize=10, transform=ccrs.Geodetic(),)
 		
 		#Constraining the axes of the map
 		ax.set_extent((min_way_lon-0.01,max_way_lon+0.01,min_way_lat-0.01,max_way_lat+0.01))	
