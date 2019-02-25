@@ -9,6 +9,8 @@ class argHandler(dict):
     # Setting the default values
     def setDefaults(self):
         self.define('labels', 'labels.txt', 'path to labels file')
+        self.define('binary', './bin/', 'path to .weights directory')
+        self.define('backup', './ckpt/', 'path to backup folder')
         self.define('summary', '', 'path to TensorBoard summaries directory')
         self.define('threshold', 0.1, 'detection threshold')
         self.define('model', '', 'configuration of choice')
