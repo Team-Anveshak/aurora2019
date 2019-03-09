@@ -21,20 +21,24 @@ def resize_input(self, im):
 	return imsz
 
 def process_box(self, b, h, w, threshold):
-	max_indx = np.argmax(b.probs)
-	max_prob = b.probs[max_indx]
-	label = self.meta['labels'][max_indx]
-	if max_prob > threshold and (label == 'bottle' or label == 'box' or label == 'frisbee') :
-		left  = int ((b.x - b.w/2.) * w)
-		right = int ((b.x + b.w/2.) * w)
-		top   = int ((b.y - b.h/2.) * h)
-		bot   = int ((b.y + b.h/2.) * h)
-		if left  < 0    :  left = 0
-		if right > w - 1: right = w - 1
-		if top   < 0    :   top = 0
-		if bot   > h - 1:   bot = h - 1
-		mess = '{}'.format(label)
-		return (left, right, top, bot, mess, max_indx, max_prob)
+    max_indx = np.argmax(b.probs)
+    max_prob = b.probs[max_indx]
+    label = self.meta['labels'][max_indx]
+    if max_prob > threshold and label == 'Ball' :
+        left  = int ((b.x - b.w/2.) * w)
+        right = int ((b.x + b.w/2.) * w)
+        top   = int ((b.y - b.h/2.) * h)
+        bot   = int ((b.y + b.h/2.) * h)
+
+        if left  < 0    :   left = 0
+        if right > w - 1:   right = w - 1
+        if top   < 0    :   top = 0
+        if bot   > h - 1:   bot = h - 1
+
+        print("Ball detected.      Confidence: ", max_prob * 100)
+        mess = '{}'.format(label)
+        return (left, right, top, bot, mess, max_indx, max_prob)
+
 	return None
 
 def findboxes(self, net_out):

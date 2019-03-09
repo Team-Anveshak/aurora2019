@@ -129,6 +129,8 @@ def camera(self):
                 postprocessed = self.framework.postprocess(
                     single_out, img, False)
                 if SaveVideo:
+                    cv2.imshow('', postprocessed)
+                    cv2.waitKey(1)
                     videoWriter.write(postprocessed)
                 if file == 0: #camera window
                     cv2.imshow('', postprocessed)
@@ -136,11 +138,11 @@ def camera(self):
             buffer_inp = list()
             buffer_pre = list()
 
-        if elapsed % 5 == 0:
-            sys.stdout.write('\r')
-            sys.stdout.write('{0:3.3f} FPS'.format(
-                elapsed / (timer() - start)))
-            sys.stdout.flush()
+        # if elapsed % 5 == 0:
+        # sys.stdout.write('\r')
+                # sys.stdout.write('{0:3.3f} FPS'.format(
+                # elapsed / (timer() - start)))
+                # sys.stdout.flush()
         if file == 0: #camera window
             choice = cv2.waitKey(1)
             if choice == 27: break
