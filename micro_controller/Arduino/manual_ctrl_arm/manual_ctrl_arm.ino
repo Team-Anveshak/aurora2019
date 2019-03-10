@@ -25,7 +25,7 @@
 #define INB5 42		//DIR
 #define INB6 20 	//SDA
 #define PWM6 2 	//ENCA2
-#define PWM5 3		//ENCA1
+#define PWM5 3	//ENCA1
 
 
 
@@ -120,7 +120,7 @@ void loop(){
     digitalWrite(INB1,HIGH);
     digitalWrite(INA1,LOW);
   }
-  analogWrite(PWM1,pwm[0]);
+  analogWrite(PWM1,abs(pwm[0]));
   
  if(pwm[1]== 0){
     digitalWrite(INA2,HIGH);
@@ -132,7 +132,7 @@ void loop(){
     digitalWrite(INB2,HIGH);
     digitalWrite(INA2,LOW);
   }
-  analogWrite(PWM2,pwm[1]);
+  analogWrite(PWM2,abs(pwm[1]));
   
   if(pwm[2]== 0){
     digitalWrite(INA3,HIGH);
@@ -144,7 +144,7 @@ void loop(){
     digitalWrite(INB3,HIGH);
     digitalWrite(INA3,LOW);
   }
-  analogWrite(PWM3,pwm[2]);
+  analogWrite(PWM3,abs(pwm[2]));
   
   if(pwm[3]== 0){
     digitalWrite(INA4,HIGH);
@@ -156,7 +156,7 @@ void loop(){
     digitalWrite(INB4,HIGH);
     digitalWrite(INA4,LOW);
   }
-  analogWrite(PWM4,pwm[3]);
+  analogWrite(PWM4,abs(pwm[3]));
   
  if(pwm[4]== 0){
     digitalWrite(INA5,HIGH);
@@ -168,7 +168,7 @@ void loop(){
     digitalWrite(INB5,HIGH);
     digitalWrite(INA5,LOW);
   }
-  analogWrite(PWM5,pwm[4]);
+  analogWrite(PWM5,abs(pwm[4]));
   
   if(pwm[5]== 0){
     digitalWrite(INA6,HIGH);
@@ -180,5 +180,5 @@ void loop(){
     digitalWrite(INB6,HIGH);
     digitalWrite(INA6,LOW);
   }
-  analogWrite(PWM6,pwm[5]);
+  analogWrite(PWM6,abs(pwm[5]));
 }

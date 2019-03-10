@@ -1,7 +1,6 @@
-int16 steps
-float32 spd
-int16 period
-int16 sol1
-int16 sol2
-int16 nwire
-int16 servo
+int16 steps1
+int16 steps2
+int16 period1
+int16 period2
+float32 sol1
+float32 sol2

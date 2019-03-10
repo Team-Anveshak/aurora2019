@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(sensors)
 
+set(RPLIDAR_SDK_PATH "./sdk/")
+FILE(GLOB RPLIDAR_SDK_SRC 
+  "${RPLIDAR_SDK_PATH}/src/arch/linux/*.cpp"
+  "${RPLIDAR_SDK_PATH}/src/hal/*.cpp"
+  "${RPLIDAR_SDK_PATH}/src/*.cpp"
+)
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -12,6 +18,9 @@ find_package(catkin REQUIRED COMPONENTS
   roslint
   std_msgs
   message_generation
+  roscpp
+  rosconsole
+  sensor_msgs
 )
 
 #For nmea
@@ -108,12 +117,12 @@ catkin_package()
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+#catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES sensors
 #  CATKIN_DEPENDS rospy
 #  DEPENDS system_lib
-)
+#)
 
 ###########
 ## Build ##
@@ -123,9 +132,12 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
+  ${RPLIDAR_SDK_PATH}/include
+  ${RPLIDAR_SDK_PATH}/src
   ${catkin_INCLUDE_DIRS}
 )
 
+catkin_package()
 
 
 #For nmea
@@ -153,7 +165,11 @@ roslint_add_test()
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/sensors_node.cpp)
+add_executable(rplidarNode src/node.cpp ${RPLIDAR_SDK_SRC})
+target_link_libraries(rplidarNode ${catkin_LIBRARIES})
 
+add_executable(rplidarNodeClient src/client.cpp)
+target_link_libraries(rplidarNodeClient ${catkin_LIBRARIES})
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -203,7 +219,16 @@ roslint_add_test()
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+install(TARGETS rplidarNode rplidarNodeClient
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
+install(DIRECTORY launch rviz sdk
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+)
 #############
 ## Testing ##
 #############

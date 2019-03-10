@@ -11,11 +11,11 @@ using namespace cv;
 
 int main(int argc, char** argv) {
 
-    /*cv::VideoCapture cap1("v4l2src device=\"/dev/video0\" ! video/x-raw, width=640, height=480, format=RGB ! videoconvert ! appsink");
+    cv::VideoCapture cap1("v4l2src device=\"/dev/video0\" ! video/x-raw, width=640, height=480, format=RGB ! videoconvert ! appsink");
     if (!cap1.isOpened()) {
         printf("=ERR= can't create video capture\n");
         return -1;
-    }*/
+    }
 
     cv::VideoCapture cap2("v4l2src device=\"/dev/video1\" ! video/x-raw, width=640, height=480, format=RGB ! videoconvert ! appsink");
     if (!cap2.isOpened()) {
