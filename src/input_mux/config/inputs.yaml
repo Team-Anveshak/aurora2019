@@ -2,12 +2,12 @@ inputs:
   joy_drive:
     input_type: "joy"
     topic_name: "joy_drive"
-    topic_msg_type: "sensor_msgs/joy"
+    topic_msg_type: "man_ctrl/WheelRpm"
     destination_node: "drive"
-  gui_drive:
-    input_type: "gui"
-    topic_name: "gui_drive"
-    topic_msg_type: "sensor_msgs/gui"
+  planner_drive:
+    input_type: "planner"
+    topic_name: "planner_drive"
+    topic_msg_type: "man_ctrl/WheelRpm"
     destination_node: "drive"
   joy_arm:
     input_type: "joy"
