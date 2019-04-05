@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node respawn="true" pkg="rosserial_python" type="serial_node.py" name="joy1" >
+     <param name="port" type="string" value="/dev/ttyACM0" />
+   </node>
+
+  <node respawn="true" pkg="rosserial_python" type="serial_node.py" name="joy2" >
+     <param name="port" type="string" value="/dev/ttyUSB0" />
+   </node>
+
+
+</launch>

@@ -52,12 +52,14 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    Goal.msg
    Planner_state.msg
+   Enc_dist.msg
  )
 
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
    plan_state.srv
+   dist_state.srv
  )
 
 ## Generate actions in the 'action' folder

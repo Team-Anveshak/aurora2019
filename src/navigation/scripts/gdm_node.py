@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 #add option to load data from file or enter new
 import rospy
-from math import *
-import sys, signal,thread
-from termcolor import colored
 from sensor_msgs.msg import NavSatFix
 from navigation.msg import Goal,Planner_state
 from navigation.srv import *
 from obj_detect.srv import *
+
+from math import *
+import sys, signal,thread
+from termcolor import colored
+
 
 def signal_handler(signal, frame):  #For catching keyboard interrupt Ctrl+C
 	print "\nProgram exiting....."
@@ -27,7 +29,7 @@ class GPS() :
 		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
 		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback)
 
-		if(raw_input('Do you want to load from file [y/n] ?') == 'y')
+		if(raw_input('Do you want to load from file [y/n] ?') == 'y'):
 			file_path = "/home/anveshak/aurora2019/src/navigation/config/gps_data.txt"
 			try:
 				self.f=open(file_path,'r')
@@ -83,12 +85,18 @@ class GPS() :
 						self.pub_goal.publish(goal)
 						rate = rospy.Rate(1)
 						rate.sleep()
-					except Exception,e:
-						print colored("Error",'red') + "%s"%e
+					except Exception:
+						print colored("ERROR in planner part",'red')
 
 				if(self.planner_status == 1):
 					self.srv("rst")
-					
+				
+				try:
+					result = self.obj_srv()
+					print "Object detection: \n%s"%resp
+				except rospy.ServiceException:
+					print colored("Object service failed",'red')
+
 				print colored("\n Moving to next GPS point.. \n",'white')
 
 			print colored('Successfully past all waypoints!!','white')
@@ -107,14 +115,13 @@ class GPS() :
 			#print "Resetting..."
 			temp.rst = 1
 		else:
-			return colored('Error calling service','red')
+			return 0
 
 		try:
 			resp = self.state_srv(temp)
-			#print "Service response: %s \n"%resp
 			return resp
-		except rospy.ServiceException, e:
-			#print "Service call failed: %s"%e
+		except rospy.ServiceException:
+			colored('ERROR calling planner service','red')
 			return 'Error'
 
 		print colored("\n Type 'p' to pause ----- 'c' to contin ----- 'r' to rst the Planner \n", 'blue')
@@ -166,20 +173,5 @@ if __name__ == '__main__':
 		sys.exit()
 
 
-'''try:
-	#result = self.obj_srv()
-	pass#print "Service response: %s"%resp
-except rospy.ServiceException, e:
-	pass#print "Service call failed: %s"%e
-	
-results = result.split(',')
-print colored("\n-----------------------------")
-for i in results:
-	if (i == "box") :
-		print colored("\n\n Object detected : \"RED BOX\"  \n\n",'white')
-	elif (i == "bottle") :
-		print colored("\n\n Object detected : \"BLUE BOTTLE\"  \n\n",'white')
-	elif (i == "disc") :
-		print colored("\n\n Object detected : \"YELLOW DISC\"  \n\n",'white')
-print colored("-----------------------------\n")'''
+
 				

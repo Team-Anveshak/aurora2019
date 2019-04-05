@@ -64,6 +64,8 @@ catkin_python_setup()
    FILES
    Imu.msg
    PanTilt.msg 
+   LaserScan.msg 
+   Joy.msg
 )
 
 ## Generate services in the 'srv' folder

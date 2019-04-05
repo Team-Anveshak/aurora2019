@@ -4,7 +4,7 @@ HardwareTimer timer(3);
 
 /////
 
-int address = 17;   //change address here 15,16,17
+int address = 16;   //change address here 15,16,17
 
 /////
 
@@ -51,13 +51,20 @@ void setup()
 
   digitalWrite(slpl, HIGH);
   digitalWrite(slpr, HIGH);
-  
+
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
 
   Wire.begin(address);
 
   Wire.onReceive(receiveEvent);
+
+ pwmWrite(PWMl, 0);
+  pwmWrite(PWMr,0);
+  digitalWrite(slpl, LOW);
+  digitalWrite(slpr,LOW);
+  digitalWrite(DIRr, LOW);
+  digitalWrite(DIRl, LOW);
 
 }
 

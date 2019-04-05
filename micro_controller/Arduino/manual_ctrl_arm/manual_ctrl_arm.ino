@@ -20,12 +20,12 @@
 #define PWM4 4
 
 //2-ch Pololu on GCB
-#define INA5 6  	//PWM_G
+#define INA5 44  	//PWM_G
 #define INA6 21 	//SCL
 #define INB5 42		//DIR
 #define INB6 20 	//SDA
 #define PWM6 2 	//ENCA2
-#define PWM5 3	//ENCA1
+#define PWM5 3//ENCA1
 
 
 

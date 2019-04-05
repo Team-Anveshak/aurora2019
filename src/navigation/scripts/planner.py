@@ -2,13 +2,11 @@
 #add service to reload params
 import rospy
 from navigation.srv import *
-#from navigation.msg import *
-from std_msgs.msg import String
-from navigation.msg import Goal,Planner_state
-from sensors.msg import Imu,LaserScan
 from man_ctrl.srv import *
+from navigation.msg import *
+from sensors.msg import *
 from man_ctrl.msg import WheelRpm
-import math
+
 import thread
 from termcolor import colored
 import numpy as np
@@ -17,16 +15,15 @@ class Planner():
 
     def __init__ (self):
         rospy.init_node("Planner")
-
-        #threads
-        #thread.start_new_thread( self.obs_scanner,())
+        self.load_vars() #variables
+        self.load_params() #param variables
 
         #subscribers
         try:
             rospy.Subscriber("imu",Imu, self.imuCallback)
             rospy.Subscriber("goal",Goal,self.goalCallback)
-            #rospy.Subscriber("curr_pos",..,self.distCallback)
-            #rospy.Subscriber("scan",LaserScan,self.rplCallback)
+            #rospy.Subscriber("curr_dist",Enc_dist,self.distCallback)
+            rospy.Subscriber("scan",LaserScan,self.rplCallback)
         except Exception,e:
             print e
 
@@ -38,19 +35,23 @@ class Planner():
         self.state_ser=rospy.Service('Planner_state_ctrl',plan_state,self.state_ctrl) #state service
 
         #service clients
+        rospy.wait_for_service('rotator')
         try:
-            rospy.wait_for_service('rotator')
-            # self.cli_drive_state = rospy.ServiceProxy('Drive_state_ctrl', drive_state)
             self.drive_rotate_srv = rospy.ServiceProxy('rotator', rotate)
         except Exception,e:
             print "Service call failed: %s"%e
+        '''try:
+            rospy.wait_for_service('Distance_reset')
+            self.distacne_rst_srv = rospy.ServiceProxy('Distance_reset', dist_state)
+        except Exception,e:
+            print "Service call failed: %s"%e'''
 
-        self.load_vars() #variables
-        self.load_params() #param variables
+        #threads
+        thread.start_new_thread( self.obs_scanner,())
 
     def spin(self):
         rate = rospy.Rate(1)
-        self.bearing_dest = self.bearing_curr
+        #self.bearing_dest = self.bearing_curr
         while not rospy.is_shutdown():
             self.main() #main func
             rate.sleep()
@@ -58,57 +59,94 @@ class Planner():
     def main(self):
         
         if(self.state=="run"):
+                self.obs_scanner_active = True
                 if(self.distance_to_dest > self.dist_tolerance): # replace with distacetodest > tolerance
                     self.pub_planner_state.publish(0)
                     if(abs(self.bearing_dest-self.bearing_curr)<self.bearing_tolerance):
-                    	if(abs(self.bearing_dest-self.bearing_curr)<self.bearing_tolerance):
-			                forward_vel = self.forward_vel_cal(self.forward_min,self.forward_max,2)
-			                self.drive_pub(forward_vel,0,self.forward_max)  #setup a primitive pid w.r.t to diatnce to be travelled.
-	                    else:
-	                        try:
-								print colored('\n Sending request for %f'%self.bearing_dest,'white')
-								result = self.drive_rotate_srv(float(self.bearing_dest))
-								print result
-	                        except rospy.ServiceException,e :
-	                            print "Service call failed: %s"%e
-	                        #send service call to drive node to turn to self.bearing destination
+                        forward_vel = self.forward_vel_cal(self.forward_min,self.forward_max,2)
+                        self.drive_pub(forward_vel,0,self.forward_max)  #setup a primitive pid w.r.t to diatnce to be travelled.
+                    else:
+                        self.obs_scanner_active = False
+                        try:
+                            print colored('\n Sending request for %f'%self.bearing_dest,'white')
+                            result = self.drive_rotate_srv(float(self.bearing_dest))
+                            print result
+                        except rospy.ServiceException,e :
+                            print "Service call failed: %s"%e
+                        #send service call to drive node to turn to self.bearing destination
                 else:
                     self.pub_planner_state.publish(1)
-		    		self.drive_pub(0.0,0.0,self.forward_max)
+                    self.drive_pub(0.0,0.0,self.forward_max)
+                    self.obs_scanner_active = False
                     rospy.loginfo("destination reached")
 
         elif(self.state=="pause"):
             self.drive_pub(0.0,0.0,self.forward_max)
+            self.obs_scanner_active = False
             pass
+            
         elif(self.state=="stop"):
-            #self.reset()
+            self.obs_scanner_active = False
+            self.drive_pub(0.0,0.0,self.forward_max)
             self.distance_to_dest_init = self.distance_to_dest
+            pass
+
+        elif(self.state=="obs_ctrl"):
             pass
 
     def obs_scanner(self):
         rate2= rospy.Rate(1)
         while not rospy.is_shutdown():
-            indx = np.where(self.lidar > self.lidar_threshold) #where there are no obstacles
-            if not np.all([np.isin(indx,[87:91])]): #if there is obstacle in -2deg to 2deg
+            indx = np.where(self.lidar > self.lidar_threshold)[0] #where there are no obstacles
+            no_obs = np.all(np.in1d(np.array(range(87,92)),indx, assume_unique=False,
+                invert=False))
+
+            ang_los = self.bearing_dest - self.bearing_curr 
+            if ang_los > 180:
+                ang_los = 360-ang_los
+            elif ang_los < -180:
+                ang_los = 360 + ang_los
+
+            los = np.all(np.in1d(np.array(range(87+ang_los,92+ang_los)),indx, assume_unique=False,
+                invert=False))
+            
+            if (not no_obs) and self.obs_scanner_active : #if there is obstacle in -2deg to 2deg
                 print colored('\n ----------- \nObstacle detected..... planner paused', 'white')
 
                 self.state = 'pause'
 
                 arr = np.zeros((5,180))             #array with -2deg to 2deg values at each -90deg to 90deg
-                arr[0,:] = self.lidar[0:179]
-                arr[1,:] = self.lidar[1:180]
-                arr[2,:] = self.lidar[2:181]
-                arr[-1,:] = self.lidar[-1:178]
-                arr[-2,:] = self.lidar[-2:177]
+                for i in range(5)  :
+                    arr[i,:] = self.lidar[i:180+i]
 
-                indx = np.all([arr > self.lidar_threshold],axis = 0)
-                indx = np.where(indx == True)-90
-                abs_angle = np.min(abs(indx))
-                if abs_angle is in indx :
-                    angle = abs_angle
-                elif -abs_angle is in indx :
-                    angle = -abs_angle
+                indx = np.array(np.all([arr > self.lidar_threshold],axis = 1))[0]
+                indx = np.array(np.where(indx == True))[0]-87
+                
+                self.drive_pub(0.0,0.0,self.forward_max)
+                self.state = 'obs_ctrl'
 
+                arr = np.zeros((5,180))             #array with -2deg to 2deg values at each -90deg to 90deg
+                for i in range(5)  :
+                    arr[i,:] = self.lidar[i:180+i]
+
+                indx = np.array(np.all([arr > self.lidar_threshold],axis = 1))[0]
+                indx = np.array(np.where(indx == True))[0]-87
+                
+                try:
+                    abs_angle = np.min(abs(indx))
+                except :
+                    abs_angle = 0.0
+
+                if abs_angle < 6:
+                    if abs_angle in indx :
+                        angle = abs_angle
+                    else :
+                        angle = -abs_angle
+                else:
+                    if abs_angle in indx :
+                        angle = 6 + abs_angle
+                    else :
+                        angle = -6 - abs_angle
                 print colored('No obstacle at %fdeg'%(angle),'white')
 
                 try:
@@ -118,15 +156,26 @@ class Planner():
                 except rospy.ServiceException,e :
                     print "Service call failed: %s"%e
 
-                #Move forward
+                '''#Move forward for 5m
+                resp = self.distacne_rst_srv()
+                print colored(resp,'white')
+
+                self.drive_pub(10.0,0,self.forward_max)
+                while self.dist<5.0:
+                    pass
+                self.drive_pub(0,0,self.forward_max)'''
+                
+                self.drive_pub(25.0,0,self.forward_max)
+                rate2.sleep(); rate2.sleep(); rate2.sleep()
+                self.drive_pub(0,0,self.forward_max)
+
+            elif (not los) and self.obs_scanner_active:
+                self.state = 'obs_ctrl'
+                self.drive_pub(25.0,0,self.forward_max)
+            elif los:
                 self.state = 'run'
-                rate2.sleep()
-        # rate2= rospy.Rate(1)
-        # while not rospy.is_shutdown():
-        #     print("hey")
-        #     #main func
-        #     rate2.sleep()
-        #pass
+
+            rate2.sleep()
 
     def state_ctrl(self,srv_msg):
 
@@ -157,9 +206,10 @@ class Planner():
         self.distance_travelled     = 0.0   #this is the distance that is travelled along the destination so need to convert it from the distance value from the distance calculator reset it when new goal is recieved
         self.bearing_dest           = 0.0
         self.bearing_curr           = 0.0   #current bearing of the rover
-        self.lidar = np.zeros(360) 
-	
-	
+        self.lidar                  = 10*np.ones(360) 
+        self.dist                   = 0.0
+        self.obs_scanner_active     = True
+
     def imuCallback(self,msg):
         self.bearing_curr = msg.yaw
 
@@ -168,15 +218,15 @@ class Planner():
         self.bearing_dest = msg.bearing
 
     def distCallback(self,msg): #getting the position of the bot from the pos calculator
-        pass
+        self.dist = msg.dist
 
     def rplCallback(self,msg): #getting the position of the bot from the pos calculator
-        self.lidar = np.array(scan)
+        self.lidar = np.array(msg.ranges)
 
     def reset(self): #for resetting all variables to start position, sending the distance calculator to reset etc
         self.load_vars()
         self.load_params()
-		self.drive_pub(0.0,0.0,self.forward_max)
+        self.drive_pub(0.0,0.0,self.forward_max)
         #need to reset distance calculator
 
     def drive_pub(self,vel,omega,max_vel,theta=1000): #used to send the drive node the info, the value of theta taken is 0 to 359 if any other value is given the service won't be called.
