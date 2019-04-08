@@ -8,18 +8,21 @@ from generate_xml import write_xml
 img = None
 tl_list = []
 br_list = []
+tl = []
+br = []
 object_list = []
 
 # constants
 image_folder = 'images' # Place the image directory here
 savedir = 'annotations' # Place the annotations directory here
-obj = 'ball'            # Write the object label here
+obj = 'bottle'            # Write the object label here
 
 
 def line_select_callback(clk, rls):
     global tl_list
     global br_list
     global object_list
+    
     tl_list.append((int(clk.xdata), int(clk.ydata)))
     br_list.append((int(rls.xdata), int(rls.ydata)))
     object_list.append(obj)
@@ -29,15 +32,23 @@ def onkeypress(event):
     global object_list
     global tl_list
     global br_list
+    global tl
+    global br
     global img
     if event.key == 'q':
         print(object_list)
-        write_xml(image_folder, img, object_list, tl_list, br_list, savedir)
+        tl.append(tl_list[-1])
+        br.append(br_list[-1])
+        write_xml(image_folder, img, object_list, tl, br, savedir)
         tl_list = []
         br_list = []
         object_list = []
+        tl = []
+        br = []
         img = None
-
+    if event.key == 'w':
+        tl.append(tl_list[-1])
+        br.append(br_list[-1])
 
 def toggle_selector(event):
     toggle_selector.RS.set_active(True)
@@ -52,13 +63,11 @@ if __name__ == '__main__':
         image = cv2.imread(image_file.path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         ax.imshow(image)
-
-        toggle_selector.RS = RectangleSelector(
-            ax, line_select_callback,
-            drawtype='box', useblit=True,
-            button=[1], minspanx=5, minspany=5,
-            spancoords='pixels', interactive=True,
-        )
+        toggle_selector.RS = RectangleSelector(ax, line_select_callback,
+                                               drawtype='box', useblit=True,
+                                               button=[1], minspanx=5, minspany=5,
+                                               spancoords='pixels', interactive=True,
+                                               )
         bbox = plt.connect('key_press_event', toggle_selector)
         key = plt.connect('key_press_event', onkeypress)
         plt.tight_layout()
