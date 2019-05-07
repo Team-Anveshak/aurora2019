@@ -17,6 +17,6 @@ inputs:
 
 destination:
   drive:
-    topic_name: "drive_input"
+    topic_name: "drive_inp"
   arm:
     topic_name: "arm_input"

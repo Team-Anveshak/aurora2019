@@ -9,6 +9,7 @@
 #define b1 15
 #define b2 16
 #define b3 17
+#define b4 20
 
 Servo pan;
 Servo tilt;
@@ -44,6 +45,7 @@ void roverMotionCallback(const man_ctrl::WheelRpm& RoverRpm)
   loco(b1);
   loco(b2);
   loco(b3);
+   loco(b4);
 }
 
 void servoCallback(const sensors::PanTilt& Control)

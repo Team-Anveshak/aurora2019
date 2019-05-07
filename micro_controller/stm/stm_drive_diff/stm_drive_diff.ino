@@ -4,7 +4,7 @@ HardwareTimer timer(3);
 
 /////
 
-int address = 16;   //change address here 15,16,17
+int address = 15;   //change address here 15,16,17
 
 /////
 
@@ -38,8 +38,8 @@ void receiveEvent(int howMany)
 
 void setup()
 {
-  timer.setPrescaleFactor(6);
-  timer.setOverflow(240);
+timer.setPeriod(50);
+
   pinMode(PWMl, PWM);
   pinMode(PWMr, PWM);
   pinMode(slpl, OUTPUT);
@@ -53,7 +53,7 @@ void setup()
   digitalWrite(slpr, HIGH);
 
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_BUILTIN, LOW);
 
   Wire.begin(address);
 
@@ -73,6 +73,8 @@ void loop()
 
   pwmr = int(constrain(1.438 * (float(vel) + ang_vel), -255, 255));
   pwml = int(constrain(1.438 * (float(vel) - ang_vel), -255, 255));
+  pwmr = map(pwmr,-255,255,-4095,4095);
+  pwml = map(pwml,-255,255,-4095,4095);
   if (pwmr > 0)
   {
     digitalWrite(slpr, HIGH);

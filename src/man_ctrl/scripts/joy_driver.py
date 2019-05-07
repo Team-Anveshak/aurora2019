@@ -33,6 +33,7 @@ def main():
         if(abs(forward_vel)>0.1 or abs(omega)>0.1):
             vel.vel = forward_vel*30*m
             vel.omega = omega*10*m
+            vel.max_rpm = m*30
         else:
             vel.vel = 0
             vel.omega = 0
@@ -43,10 +44,11 @@ def main():
 ###################################################################################
 
 def joyCallback(msg):
-    global forward_vel, omega
+    global forward_vel, omega, m
 
     forward_vel = msg.axes[1]
     omega = msg.axes[2]
+
 
     if(msg.buttons[5]==1):
         if m <5:

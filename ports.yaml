@@ -1,0 +1,5 @@
+imu_port: '/dev/ttyUSB0'
+gps_port: '/dev/gps'
+rplidarNode/serial_port: '/dev/ttyUSB1' #Lidar
+drive_port: '/dev/drive'
+arm_port: '/dev/arm'

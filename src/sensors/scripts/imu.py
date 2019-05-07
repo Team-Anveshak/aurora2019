@@ -21,7 +21,7 @@ diag_pub_time = rospy.get_time();
 imuMsg = Imu()
 
 default_port='/dev/imu'
-port = rospy.get_param('~port', default_port)
+port = rospy.get_param('/imu_port', default_port)
 
 
 #accelerometer

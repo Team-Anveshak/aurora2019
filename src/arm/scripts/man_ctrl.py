@@ -9,7 +9,7 @@ class Arm:
 		rospy.init_node("Arm_publisher")
 		self.pub = rospy.Publisher("set",Pwm,queue_size=5)
 		self.rate = rospy
-		rospy.Subscriber("joy_arm", Joy, self.joyCallback) 
+		rospy.Subscriber("joy", Joy, self.joyCallback) 
 		self.set = Pwm()
 
 	def main(self):

@@ -12,6 +12,7 @@ inputs = rospy.get_param('/Input_mux')
 pub={}
 velocity= 0.0
 angular_vel= 0.0
+max_rpm = 0.0
 active_input = '1'
 
 def init():
@@ -49,25 +50,28 @@ def user_input():
             print "Invalid input\n"
 
 def main():
-    global velocity_joy
+    global velocity, angular_vel, max_rpm
     vel=WheelRpm()
     vel.vel = velocity
     vel.omega = angular_vel
+    vel.max_rpm = max_rpm
     # print velocity_joy
     pub["drive"].publish(vel)
 
 def joy_drive(msg):
-    global velocity, angular_vel,active_input 
+    global velocity, angular_vel,active_input , max_rpm
     if active_input == '1':
         velocity=msg.vel
         angular_vel=msg.omega
+        max_rpm = msg.max_rpm
     # print "hey"
 
 def planner_drive(msg):
-    global velocity, angular_vel,active_input 
+    global velocity, angular_vel,active_input , max_rpm
     if active_input == '2':
         velocity=msg.vel
         angular_vel=msg.omega
+        max_rpm = msg.max_rpm
         # velocity=1
         # angular_vel= 2
 
