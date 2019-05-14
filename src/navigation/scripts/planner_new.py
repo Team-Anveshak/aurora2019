@@ -101,8 +101,9 @@ class Planner():
 		rate3 = rospy.Rate(100)
 		while not rospy.is_shutdown():
 
+			fow = int( np.min(self.lidar[75:225])*2.5/self.lidar_threshold )
 			indx = np.where(self.lidar > self.lidar_threshold)[0] #where there are no obstacles
-			no_obs = np.all(np.in1d(np.array(range(87,92)),indx, assume_unique=False,
+			no_obs = np.all(np.in1d(np.array(range(90-fow,91+fow)),indx, assume_unique=False,
 				invert=False)) #says true if there is no obstacle in front
 
 			ang_los = int(self.bearing_dest - self.bearing_curr )
@@ -111,7 +112,7 @@ class Planner():
 			elif ang_los < -180:
 				ang_los = 360 + ang_los
 
-			los = np.all(np.in1d(np.array(range(87+ang_los,92+ang_los)),indx, assume_unique=False,
+			los = np.all(np.in1d(np.array(range(90-fow+ang_los,91+fow+ang_los)),indx, assume_unique=False,
 				invert=False)) #says true if there is no obstacle in los path
 			if abs(ang_los) > 90:
 				los = True
@@ -123,12 +124,12 @@ class Planner():
 				
 				
 
-				arr = np.zeros((5,180))             #array with -2deg to 2deg values at each -90deg to 90deg
-				for i in range(5)  :
-					arr[i,:] = self.lidar[i:180+i]
+				arr = np.zeros((2*fow,180))             #array with -2deg to 2deg values at each -90deg to 90deg
+				for i in range(2*fow)  :
+					arr[i,:] = self.lidar[2*fow:180+2*fow]
 
 				indx = np.array(np.all([arr > self.lidar_threshold],axis = 1))[0]
-				indx = np.array(np.where(indx == True))[0]-87
+				indx = np.array(np.where(indx == True))[0]-90+fow
 
 				
 				try:

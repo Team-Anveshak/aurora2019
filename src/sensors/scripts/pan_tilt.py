@@ -13,35 +13,41 @@ class Servo():
 		self.panCtrl = 0
 		self.tiltCtrl = 0
 		self.panAngle = 90
-		self.tiltAngle = 10
+		self.tiltAngle = 150
+		self.relay = False
 		self.lastTime = time.time()
 
 	def joyCallback(self,msg):
 
 		self.panCtrl = msg.axes[4]
 		self.tiltCtrl = msg.axes[5]
+		if msg.buttons[9]==1:
+			self.relay = True
+		elif msg.buttons[8] == 1:
+			self.relay = False
 
 	def main(self):
 		servo_msg = PanTilt()
+		servo_msg.rel = self.relay
 		if time.time() - self.lastTime>0.1:
-			if(self.panAngle>0 and self.panAngle<180):
+			if(self.panAngle>0 and self.panAngle<253):
 				self.panAngle = self.panAngle + 2*self.panCtrl
 			else:
 				if self.panAngle<=0:
 					self.panAngle = 1
-				if self.panAngle>=180:
-					self.panAngle = 179
+				if self.panAngle>=253:
+					self.panAngle = 252
 
-			if(self.tiltAngle>0 and self.tiltAngle<138):
+			if(self.tiltAngle>0 and self.tiltAngle<253):
 				self.tiltAngle = self.tiltAngle - 2*self.tiltCtrl
 			else:
 				if self.tiltAngle<=0:
 					self.tiltAngle = 1
-				if self.tiltAngle>=137:
-					self.tiltAngle = 137
+				if self.tiltAngle>=253:
+					self.tiltAngle = 252
 
-			servo_msg.pan = self.panAngle
-			servo_msg.tilt = self.tiltAngle
+			servo_msg.pan = 3276.8 + self.panAngle*18.2044444
+			servo_msg.tilt = 3276.8 + self.tiltAngle*18.2044444
 			self.servo_pub.publish(servo_msg)
 			self.lastTime = time.time()
 

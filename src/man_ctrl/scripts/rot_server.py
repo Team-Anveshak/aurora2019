@@ -16,7 +16,7 @@ class rotateService():
 		self.pub_serv = rospy.Publisher("drive_inp",WheelRpm,queue_size = 10)
 		rospy.Subscriber("imu", Imu, self.imuCallback)
 
-		self.bearing_tolerance = 5.0#rospy.get_param('~bearing_tolerance',0.1)
+		self.bearing_tolerance = 2.0#rospy.get_param('~bearing_tolerance',0.1)
 		self.kp = 0.05
 		self.curr_bear = 0.0
 

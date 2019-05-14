@@ -23,9 +23,9 @@ class Arm:
 	def joyCallback(self,msg):
 		if(abs(msg.axes[2]) > 0.15):
 			if msg.axes[2] < 0 or msg.axes[2] is 0:
-				self.set.base = -int(90.0*msg.axes[2])
+				self.set.base = -int(200.0*msg.axes[2])
 			else:
-				self.set.base = -int(90.0* msg.axes[2])
+				self.set.base = -int(200.0* msg.axes[2])
 		else:
 			self.set.base =0
 			
@@ -37,9 +37,9 @@ class Arm:
 	
 		if(abs(msg.axes[3]) > 0.2):
 			if msg.axes[3] > 0:
-				self.set.shoulder = -int(150.0*msg.axes[3])
+				self.set.shoulder = -int(250.0*msg.axes[3])
 			else:
-				self.set.shoulder = -int(100.0*msg.axes[3])
+				self.set.shoulder = -int(250.0*msg.axes[3])
 		else:
 			self.set.shoulder =0
 		
