@@ -2,11 +2,11 @@
 <launch>
 
   <node respawn="true" pkg="rosserial_python" type="serial_node.py" name="arm_arduino" >
-     <!--<param name="port" type="string" value="/dev/arm" />-->
+     <!--<param name="port" type="string" value="/dev/ttyUSB0" />-->
    </node>
 
   <node respawn="true" pkg="rosserial_python" type="serial_node.py" name="drive_stm" >
-    <!-- <param name="port" type="string" value="/dev/drive" />-->
+     <!--<param name="port" type="string" value="/dev/ttyUSB1" />-->
    </node>
 
 

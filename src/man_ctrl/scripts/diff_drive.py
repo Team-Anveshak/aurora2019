@@ -29,12 +29,12 @@ class drive():
 
         rpm = WheelRpm()
 		
-        rpm.max_rpm = self.d*30
+        rpm.max_rpm = self.d*10
         
         if(abs(self.straight)>0.1 or abs(self.zero_turn)>0.1):
             
-            rpm.vel = self.straight*self.d*30
-            rpm.omega = self.zero_turn*self.d*10
+            rpm.vel = self.straight*self.d*7
+            rpm.omega = self.zero_turn*self.d*4
 
         else:
 

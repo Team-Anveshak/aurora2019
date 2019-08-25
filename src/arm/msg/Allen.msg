@@ -1,0 +1,2 @@
+bool ina
+bool inb

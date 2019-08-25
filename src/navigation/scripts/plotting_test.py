@@ -10,7 +10,6 @@ from sensor_msgs.msg import NavSatFix
 class Plot():
 	def __init__(self):
 		self.n = 0
-		
 		ax = plt.axes(projection=ccrs.PlateCarree())
 		ax.stock_img()
 		ax.coastlines()

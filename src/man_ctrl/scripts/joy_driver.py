@@ -31,8 +31,8 @@ def main():
     while not rospy.is_shutdown():
     
         if(abs(forward_vel)>0.1 or abs(omega)>0.1):
-            vel.vel = forward_vel*30*m
-            vel.omega = omega*10*m
+            vel.vel = forward_vel*7*m
+            vel.omega = omega*3*m
             vel.max_rpm = m*30
         else:
             vel.vel = 0

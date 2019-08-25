@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    Pwm.msg
    Joint_ang.msg
+   Allen.msg
  )
 
 ## Generate services in the 'srv' folder

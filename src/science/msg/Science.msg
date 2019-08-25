@@ -1,8 +1,14 @@
 int16 steps1
 int16 steps2
+int16 steps3
 int16 period1
 int16 period2
+int16 period3
 int16 pump1
 int16 pump2
-float32 sol1
-float32 sol2
+int16 s1
+int16 s2
+int16 s3
+int16 n_wire
+float32 ser1
+float32 ser2

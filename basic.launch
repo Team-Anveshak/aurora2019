@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="man_ctrl" type="diff_drive.py" name="drive" >
+   </node>
+
+   <node pkg="arm" type="man_ctrl.py" name="arm" >
+   </node>
+
+<node pkg="sensors" type="pan_tilt.py" name="pt" >
+   </node>
+
+</launch>

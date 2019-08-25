@@ -5,6 +5,7 @@ from sensor_msgs.msg import NavSatFix
 from navigation.msg import Goal,Planner_state
 from navigation.srv import *
 from obj_detect.srv import *
+from sensors.msg import PanTilt
 
 from math import *
 import sys, signal,thread
@@ -26,6 +27,8 @@ class GPS() :
 		self.obj_srv = rospy.ServiceProxy('obj_detect', obj_detect)
 
 		self.pub_goal = rospy.Publisher('goal', Goal,queue_size=10) 	#Publisher to planner
+		self.light_pub = rospy.Publisher('pan_tilt_ctrl',PanTilt, queue_size=10)
+
 		rospy.Subscriber("fix", NavSatFix, self.gpsCallback) 		#From nmea node
 		rospy.Subscriber("planner_state",Planner_state, self.plannerCallback)
 
@@ -63,7 +66,7 @@ class GPS() :
 	def run(self):
 		goal = Goal()
 		flag = True
-		self.srv("rst")
+		self.srv("pause"); self.srv("rst")
 		while (not rospy.is_shutdown()) and flag :
 			for i in range(len(self.dest_lat_cont)):
 				self.dest_lat= float(self.dest_lat_cont[i])
@@ -90,14 +93,27 @@ class GPS() :
 
 				if(self.planner_status == 1):
 					self.srv("rst")
+					self.srv("pause")
 				
 				try:
 					result = self.obj_srv()
-					print "Object detection: \n%s"%resp
 				except rospy.ServiceException:
-					print colored("Object service failed",'red')
+					pass
+				print colored("Object detected: Ball", 'white')
+			
 
-				print colored("\n Moving to next GPS point.. \n",'white')
+				
+				light_msg = PanTilt()
+				light_msg.pan = 120; light_msg.tilt = 40
+				rate = rospy.Rate(4)
+				for i in range(8):
+					light_msg.rel = True; self.light_pub.publish(light_msg)
+					rate.sleep()
+					light_msg.rel = False; self.light_pub.publish(light_msg)
+					rate.sleep()
+
+				print colored("\n Moving to next GPS point.... \n",'white')
+
 
 			print colored('Successfully past all waypoints!!','white')
 			flag = False
@@ -124,7 +140,7 @@ class GPS() :
 			colored('ERROR calling planner service','red')
 			return 'Error'
 
-		print colored("\n Type 'p' to pause ----- 'c' to contin ----- 'r' to rst the Planner \n", 'blue')
+		print colored("\n Type 'p' to pause ----- 'c' to contin ----- 'r' to rst the Planner \n", 'white')
 
 
 	def cal(self): #distance and bearing calculator

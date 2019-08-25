@@ -9,14 +9,8 @@ inputs:
     topic_name: "planner_drive"
     topic_msg_type: "man_ctrl/WheelRpm"
     destination_node: "drive"
-  joy_arm:
-    input_type: "joy"
-    topic_name: "joy_arm"
-    topic_msg_type: "sensor_msgs/joy"
-    destination_node: "arm"
 
 destination:
   drive:
     topic_name: "drive_inp"
-  arm:
-    topic_name: "arm_input"
+

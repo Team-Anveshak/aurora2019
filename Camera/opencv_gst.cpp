@@ -57,17 +57,17 @@ both = Mat(height * 2, (width * 2), CV_MAKETYPE(8, 3), CV_RGB(100, 100, 100));
 
     while (true) {
 
-        cap2 >> frame1;
+        cap1 >> frame1;
         if (frame1.empty())
             break;
         cap2 >> frame2;
 	if (frame2.empty())
 	    break;
 	cap3 >> frame3;
-        if (frame1.empty())
+        if (frame3.empty())
             break;
         cap4 >> frame4;
-	if (frame2.empty())
+	if (frame4.empty())
 	    break;
       
  /* Process the frame here */

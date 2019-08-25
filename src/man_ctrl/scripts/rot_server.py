@@ -16,7 +16,7 @@ class rotateService():
 		self.pub_serv = rospy.Publisher("drive_inp",WheelRpm,queue_size = 10)
 		rospy.Subscriber("imu", Imu, self.imuCallback)
 
-		self.bearing_tolerance = 2.0#rospy.get_param('~bearing_tolerance',0.1)
+		self.bearing_tolerance = 7.0#rospy.get_param('~bearing_tolerance',0.1)
 		self.kp = 0.05
 		self.curr_bear = 0.0
 
@@ -39,15 +39,17 @@ class rotateService():
 
 			Rpm.vel = 0
 			self.remainAngle = self.final_bear - self.curr_bear
-			self.omega = self.omegaManager(self.remainAngle)
+			
 
 			if self.remainAngle>180 :
 				self.remainAngle = self.remainAngle - 360
 			elif self.remainAngle<-180 :
 				self.remainAngle = self.remainAngle + 360
+
+			self.omega = self.omegaManager(self.remainAngle)
 				
 			if self.remainAngle<0:
-				Rpm.omega = int(self.omega)
+				Rpm.omega = int(self.omega)/1.5
 			else:
 				Rpm.omega = int(-self.omega)
 
@@ -71,9 +73,9 @@ class rotateService():
 	# 	self.omega = self.omega + self.kp*(self.actualOmega - self.setOmega)
 
 	def omegaManager(self,angle):
-		precOmega = 25 + abs(angle)/12				#units in rpm giving a min of 10rpm
-		reqOmega = precOmega - (precOmega%5)
-		return reqOmega
+		precOmega = 2.9 + abs(angle)/11.0			#units in rpm giving a min of 10rpm
+		#reqOmega = precOmega - (precOmega%5)
+		return precOmega
 
 
 	def spin(self):
