@@ -12,7 +12,7 @@ Run `. source.sh` in every new terminal opened to export IP, MASTER, sourcing th
 alt="Caesar" width="50%"/>
 
 ***
-<a href="https://facebook.com/Anveshak.CFI.IITM
+<a href="https://facebook.com/anveshak.iitm
 " target="_blank"><img src="https://cdn1.iconfinder.com/data/icons/logotypes/32/square-facebook-128.png" 
 alt="fb" width="50" height="50" border="20" /></a>&emsp;&emsp;&emsp;&emsp;
 <a href="https://www.youtube.com/channel/UCiYcMDTMdyaxfUrP-6C2HAQ
